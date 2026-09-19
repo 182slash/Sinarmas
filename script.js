@@ -1,6 +1,7 @@
 const slides = Array.from(document.querySelectorAll('.slide'));
 const total = slides.length;
 let current = 0;
+const fitTop = () => window.innerWidth <= 900 ? 100 : 84;   // batas atas area konten (di bawah logo watermark)
 const slideHooks = [];   // dipanggil tiap kali slide berganti (dipakai animasi slide 2 & 3)
 
 const labels = ['TITLE','LATAR BELAKANG','MEKANISME SITE','IDENTIFIKASI MASALAH','RUMUSAN MASALAH','SOLUSI','ROADMAP','RISIKO','PENUTUP'];
@@ -63,17 +64,36 @@ render();
 const flowStations = document.querySelectorAll('.station');
 const flowDetail = document.getElementById('flowDetail');
 const fdHTML = (num, text)=> `<span class="fd-num">${num.toUpperCase()}</span><span class="fd-text">${text}</span>`;
-flowStations.forEach(node=>{
+const fdPlaceholder = flowDetail.innerHTML;
+function showFlowDetail(html){
+  flowDetail.style.opacity = 0;
+  setTimeout(()=>{ flowDetail.innerHTML = html; flowDetail.style.opacity = 1; }, 120);
+}
+// outline bergerak untuk node aktif: dua rect di sekeliling plate (statis tipis + segmen yang berlari)
+flowStations.forEach(st=>{
+  const plate = st.querySelector('.plate');
+  if(!plate) return;
+  ['act-ring','act-run'].forEach(cls=>{
+    const r = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    r.setAttribute('class', cls);
+    r.setAttribute('x', -55); r.setAttribute('y', 27); r.setAttribute('width', 110); r.setAttribute('height', 134); r.setAttribute('rx', 6);
+    r.setAttribute('pathLength', 100);
+    plate.parentNode.insertBefore(r, plate.nextSibling);
+  });
+});
+flowStations.forEach((node, idx)=>{
   node.addEventListener('click', (e)=>{
     e.stopPropagation();
+    const wasActive = node.classList.contains('active');
     flowStations.forEach(n=>n.classList.remove('active'));
+    if(wasActive){                       // klik node aktif sekali lagi: lepas pilihan, animasi jalur berjalan lagi
+      showFlowDetail(fdPlaceholder);
+      if(window.flowPark) window.flowPark(null);
+      return;
+    }
     node.classList.add('active');
-    const numText = node.querySelector('.num').textContent;
-    flowDetail.style.opacity = 0;
-    setTimeout(()=>{
-      flowDetail.innerHTML = fdHTML(numText, node.dataset.detail);
-      flowDetail.style.opacity = 1;
-    }, 120);
+    showFlowDetail(fdHTML(node.querySelector('.num').textContent, node.dataset.detail));
+    if(window.flowPark) window.flowPark(idx);   // material berhenti di node ini
   });
 });
 
@@ -320,7 +340,9 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
   const ch = makeChoreo(dwells, .8, 1.3);
   const visitState = stations.map(()=>false), litState = stations.map(()=>false);
 
+  let lastTc = 0;
   function draw(tc, isStatic){
+    lastTc = tc;
     const s = sampleChoreo(ch, tc);
     const x = X0 + s.pos * STEP;
     const a = isStatic ? 0 : moverAlpha(ch, tc);
@@ -347,12 +369,73 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
     });
   }
   const loop = makeLoop(ch, draw);
+
+  /* ---- mode "berhenti di node terpilih" ----
+     Klik node: loop dihentikan, material meluncur (easing sama seperti loop) dari posisinya sekarang
+     ke node itu lalu diam di sana; jalur terisi & titik tap menyala sampai node tersebut. */
+  let parked = null, parkRaf = 0, curPos = 0;
+  function paintPos(pos, speed, trailAt){
+    const x = X0 + pos * STEP;
+    mover.setAttribute('transform', `translate(${x.toFixed(2)},${Y})`);
+    mover.style.opacity = 1;
+    core.setAttribute('rx', (4 + 6*speed).toFixed(2)); core.setAttribute('ry', (4 - speed).toFixed(2));
+    halo.setAttribute('rx', (10 + 9*speed).toFixed(2)); halo.setAttribute('ry', (10 - 1.5*speed).toFixed(2));
+    trails.forEach((tr, j)=>{
+      const p = trailAt ? trailAt((j + 1) * .1) : pos;
+      tr.setAttribute('cx', (X0 + p * STEP).toFixed(2));
+      tr.style.opacity = trailAt ? (.55 - j*.17) * clamp01(speed * 4) : 0;
+    });
+    fill.setAttribute('x2', x.toFixed(2)); fill.style.opacity = .7;
+    stations.forEach((st, i)=>{
+      const on = i <= pos + .02;
+      if(on !== litState[i]){ litState[i] = on; taps[i].classList.toggle('lit', on); }
+      if(visitState[i]){ visitState[i] = false; st.classList.remove('visit'); }
+    });
+    curPos = pos;
+  }
+  function parkTo(idx){
+    cancelAnimationFrame(parkRaf);
+    if(idx === null){ resume(); return; }
+    // titik awal: posisi material sekarang; kalau loop sedang di jeda/awal (material belum tampak), mulai dari ujung kiri jalur
+    const from = parked !== null ? curPos : (moverAlpha(ch, lastTc) < .3 ? 0 : sampleChoreo(ch, lastTc).pos);
+    loop.stop();
+    parked = idx;
+    mover.classList.remove('parked');
+    const dist = Math.abs(idx - from);
+    const dur = (reduceMotion || dist < .001) ? 0 : Math.min(1.6, .45 + .28 * dist);
+    const t0 = performance.now();
+    const at = t => from + (idx - from) * easeInOutCubic(dur ? clamp01(t / dur) : 1);
+    const step = now => {
+      const t = (now - t0) / 1000, k = dur ? clamp01(t / dur) : 1;
+      if(k < 1){
+        paintPos(at(t), easeInOutCubicSpeed(k), d => at(t - d));
+        parkRaf = requestAnimationFrame(step);
+      } else {
+        paintPos(idx, 0, null);
+        mover.classList.add('parked');
+      }
+    };
+    step(t0);
+  }
+  function resume(){
+    cancelAnimationFrame(parkRaf);
+    parked = null; mover.classList.remove('parked');
+    mover.style.opacity = 0; fill.style.opacity = 0;
+    trails.forEach(tr=>{ tr.style.opacity = 0; });
+    litState.fill(false); taps.forEach(t=>t.classList.remove('lit'));
+    loop.start();
+  }
+  window.flowPark = parkTo;
+
   slideHooks.push(idx=>{
-    if(idx === 2){ loop.start(); }
+    if(idx === 2){ if(parked === null) loop.start(); }
     else {
-      loop.stop();
-      visitState.fill(false); litState.fill(false);
-      stations.forEach((st, i)=>{ st.classList.remove('visit'); taps[i].classList.remove('lit'); });
+      loop.stop(); cancelAnimationFrame(parkRaf);
+      if(parked !== null){ paintPos(parked, 0, null); mover.classList.add('parked'); }   // selesaikan gerak yang terpotong
+      else {
+        visitState.fill(false); litState.fill(false);
+        stations.forEach((st, i)=>{ st.classList.remove('visit'); taps[i].classList.remove('lit'); });
+      }
     }
   });
 })();
@@ -378,7 +461,7 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
     if(!inner || !deck) return;
     inner.style.transform = '';
     const H = Math.min(window.innerHeight, deck.clientHeight);
-    const top = 76, bottom = H - 70, avail = bottom - top;
+    const top = fitTop(), bottom = H - 70, avail = bottom - top;
     const need = inner.offsetHeight;
     if(need > avail){
       const sc = Math.max(.5, avail / need);
@@ -495,7 +578,7 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
     box.style.minHeight = max + 'px';
 
     const H = Math.min(window.innerHeight, deck.clientHeight);
-    const top = 76, bottom = H - 70, avail = bottom - top, need = inner.offsetHeight;
+    const top = fitTop(), bottom = H - 70, avail = bottom - top, need = inner.offsetHeight;
     if(need > avail){
       const sc = Math.max(.5, avail / need);
       const dy = (top + bottom) / 2 - (inner.offsetTop + need / 2);
@@ -542,7 +625,7 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
       if(!inner) return;
       inner.style.transform = '';
       const H = Math.min(window.innerHeight, deck.clientHeight);
-      const top = 60, bottom = H - 70, avail = bottom - top, need = inner.offsetHeight;
+      const top = fitTop(), bottom = H - 70, avail = bottom - top, need = inner.offsetHeight;
       if(need > avail){
         const sc = Math.max(.45, avail / need);
         const dy = (top + bottom) / 2 - (inner.offsetTop + need / 2);

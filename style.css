@@ -51,11 +51,11 @@ p{color:var(--ink-dim); margin:0;}
   justify-content:space-between; padding:0 32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint);
 }
 .wm-logo{
-  position:absolute; top:7px; left:50%; transform:translateX(-50%); height:42px; width:auto;
+  position:absolute; top:14px; left:50%; transform:translateX(-50%); height:84px; width:auto;
   opacity:.5; pointer-events:none; user-select:none;
 }
 .brand{display:flex; align-items:center; gap:9px;}
-@media(max-width:480px){ .brand, #slideLabel{display:none;} .wm-logo{height:36px;} }
+@media(max-width:480px){ .brand, #slideLabel{display:none;} .wm-logo{height:72px; top:12px;} }
 .brand .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
 .progress-track{position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--line-soft);}
 .progress-fill{height:100%; background:var(--amber); transition:width .4s ease; width:0%;}
@@ -136,7 +136,17 @@ p{color:var(--ink-dim); margin:0;}
 .station-body{ transform-box:fill-box; transform-origin:center; transition:transform .45s cubic-bezier(.34,1.45,.64,1); }
 .station.visit .station-body{ transform:scale(1.04); }
 .station:hover .station-body{ transform:scale(1.05); }
-.station.active .station-body{ transform:scale(1.18); }
+.station.active .station-body{ transform:none; }   /* node aktif tidak "membesar"; penandanya outline yang bergerak */
+
+/* outline bergerak di sekeliling node yang aktif (dipasang oleh script.js) */
+.station .act-ring, .station .act-run{ fill:none; opacity:0; pointer-events:none; transition:opacity .25s; stroke:var(--amber); }
+.station .act-ring{ stroke-width:1; }
+.station .act-run{ stroke-width:2.4; stroke-linecap:round; stroke-dasharray:18 82; filter:drop-shadow(0 0 4px rgba(201,138,44,.85)); }
+.station.risk .act-ring, .station.risk .act-run{ stroke:var(--alert); }
+.station.risk .act-run{ filter:drop-shadow(0 0 4px rgba(180,87,63,.85)); }
+.station.active .act-ring{ opacity:.35; }
+.station.active .act-run{ opacity:1; animation:actRun 2.4s linear infinite; }
+@keyframes actRun{ to{ stroke-dashoffset:-100; } }
 
 /* persistent warning pulse ring on risk stations, always animating to draw attention */
 /* transform-box:fill-box WAJIB: tanpa itu titik-asal "center" merujuk ke seluruh viewBox dan ring melayang keluar dari station */
@@ -152,6 +162,8 @@ p{color:var(--ink-dim); margin:0;}
 .flow-mover, #flowMover{ pointer-events:none; }
 .mv-core{ fill:var(--amber); }
 .mv-halo{ fill:var(--amber); opacity:.26; }
+#flowMover.parked .mv-halo{ animation:moverBreath 1.8s ease-in-out infinite; }
+@keyframes moverBreath{ 0%,100%{ opacity:.22; } 50%{ opacity:.5; } }
 .mv-trail{ fill:var(--amber); opacity:0; }
 #flowMover{ opacity:0; }
 
@@ -160,7 +172,7 @@ p{color:var(--ink-dim); margin:0;}
   background:var(--bg-panel); border-left:3px solid var(--amber); box-sizing:border-box;
   font-family:var(--sans); color:var(--ink); opacity:1; transition:opacity .25s;
   /* teks besar supaya terbaca dari jauh; tinggi kotak dikunci ke isi terpanjang oleh script.js */
-  font-size:clamp(20px,min(3vw,5.2vh),46px); line-height:1.3; min-height:64px;
+  font-size:clamp(16px,min(2.4vw,4.16vh),36.8px); line-height:1.3; min-height:64px;
   display:flex; flex-direction:column; align-items:flex-start; gap:clamp(6px,1.2vh,12px);
 }
 .flow-detail .fd-num{ font-family:var(--mono); font-size:clamp(13px,1.9vh,17px); letter-spacing:.06em; color:var(--amber); white-space:nowrap; font-weight:600; }
