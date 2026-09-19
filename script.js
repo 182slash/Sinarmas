@@ -62,6 +62,7 @@ render();
 // Flow diagram
 const flowStations = document.querySelectorAll('.station');
 const flowDetail = document.getElementById('flowDetail');
+const fdHTML = (num, text)=> `<span class="fd-num">${num.toUpperCase()}</span><span class="fd-text">${text}</span>`;
 flowStations.forEach(node=>{
   node.addEventListener('click', (e)=>{
     e.stopPropagation();
@@ -70,7 +71,7 @@ flowStations.forEach(node=>{
     const numText = node.querySelector('.num').textContent;
     flowDetail.style.opacity = 0;
     setTimeout(()=>{
-      flowDetail.innerHTML = `<span class="fd-num">${numText.toUpperCase()}</span><span class="fd-text">${node.dataset.detail}</span>`;
+      flowDetail.innerHTML = fdHTML(numText, node.dataset.detail);
       flowDetail.style.opacity = 1;
     }, 120);
   });
@@ -471,4 +472,87 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
     });
   }
   slideHooks.forEach(fn=>fn(current));                     // kalau halaman dibuka langsung di slide ini
+})();
+
+/* ---- Slide 03: kunci tinggi kotak detail ke isi terpanjang ----
+   Slide diletakkan di tengah layar; kalau tinggi kotak berubah tiap klik, seluruh konten ikut
+   naik-turun. Tinggi terpanjang diukur sekali lalu dipakai tetap. Kalau layar terlalu pendek,
+   seluruh isi slide diperkecil proporsional (tidak ada scroll, tidak ada yang terpotong). */
+(function(){
+  const box = document.getElementById('flowDetail');
+  const inner = box && box.closest('.slide-inner');
+  const deck = document.getElementById('deck');
+  if(!box || !inner) return;
+  const stationList = Array.from(document.querySelectorAll('.station'));
+  const placeholder = box.innerHTML;
+  function reserve(){
+    const keep = box.innerHTML;
+    box.style.minHeight = ''; inner.style.transform = '';
+    let max = 0;
+    const states = [placeholder].concat(stationList.map(n=> fdHTML(n.querySelector('.num').textContent, n.dataset.detail)));
+    states.forEach(html=>{ box.innerHTML = html; max = Math.max(max, box.offsetHeight); });
+    box.innerHTML = keep;
+    box.style.minHeight = max + 'px';
+
+    const H = Math.min(window.innerHeight, deck.clientHeight);
+    const top = 76, bottom = H - 70, avail = bottom - top, need = inner.offsetHeight;
+    if(need > avail){
+      const sc = Math.max(.5, avail / need);
+      const dy = (top + bottom) / 2 - (inner.offsetTop + need / 2);
+      inner.style.transform = `translateY(${dy.toFixed(1)}px) scale(${sc.toFixed(3)})`;
+    }
+  }
+  reserve();
+  window.addEventListener('resize', reserve);
+  window.addEventListener('load', reserve);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(reserve);
+})();
+
+/* ---- Slide 05: kunci tinggi kotak rumusan ke isi terpanjang (sama seperti slide 04) ---- */
+(function(){
+  const box = document.getElementById('rumusanDetail');
+  if(!box || typeof rumusanData === 'undefined') return;
+  function reserve(){
+    const keep = box.innerHTML;
+    box.style.minHeight = '';
+    let max = 0;
+    Object.values(rumusanData).forEach(d=>{
+      box.innerHTML = `<div class="tag">${d.tag}</div><h3>${d.title}</h3><p>${d.text}</p>`;
+      max = Math.max(max, box.offsetHeight);
+    });
+    box.innerHTML = keep;
+    if(max) box.style.minHeight = max + 'px';
+  }
+  reserve();
+  window.addEventListener('resize', reserve);
+  window.addEventListener('load', reserve);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(reserve);
+})();
+
+/* ---- Cadangan untuk layar pendek / HP: kalau isi slide lebih tinggi dari area yang tersedia
+   (di antara bar atas dan tombol bawah), seluruh isi diperkecil proporsional supaya tidak terpotong.
+   Slide 03 dan 06 punya logika sendiri di atas, jadi dilewati di sini. ---- */
+(function(){
+  const skip = new Set([2, 5]);
+  const deck = document.getElementById('deck');
+  function fit(){
+    slides.forEach((s, i)=>{
+      if(skip.has(i)) return;
+      const inner = s.querySelector('.slide-inner');
+      if(!inner) return;
+      inner.style.transform = '';
+      const H = Math.min(window.innerHeight, deck.clientHeight);
+      const top = 60, bottom = H - 70, avail = bottom - top, need = inner.offsetHeight;
+      if(need > avail){
+        const sc = Math.max(.45, avail / need);
+        const dy = (top + bottom) / 2 - (inner.offsetTop + need / 2);
+        inner.style.transformOrigin = '50% 50%';
+        inner.style.transform = `translateY(${dy.toFixed(1)}px) scale(${sc.toFixed(3)})`;
+      }
+    });
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('load', fit);
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
 })();
