@@ -51,11 +51,11 @@ p{color:var(--ink-dim); margin:0;}
   justify-content:space-between; padding:0 32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint);
 }
 .wm-logo{
-  position:absolute; top:14px; left:50%; transform:translateX(-50%); height:84px; width:auto;
+  position:absolute; top:58px; left:32px; height:58px; width:auto;
   opacity:.5; pointer-events:none; user-select:none;
 }
 .brand{display:flex; align-items:center; gap:9px;}
-@media(max-width:480px){ .brand, #slideLabel{display:none;} .wm-logo{height:72px; top:12px;} }
+@media(max-width:480px){ .brand, #slideLabel{display:none;} .wm-logo{height:46px; top:14px; left:18px;} }
 .brand .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
 .progress-track{position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--line-soft);}
 .progress-fill{height:100%; background:var(--amber); transition:width .4s ease; width:0%;}
@@ -453,18 +453,48 @@ p{color:var(--ink-dim); margin:0;}
 @keyframes tiOrbitB{ from{ offset-distance:0%; } to{ offset-distance:-100%; } }
 
 /* slide 2: latar belakang mini pipeline (semua gerak dihitung per-frame di script.js) */
-.latar-illustration{ margin-top:44px; max-width:640px; opacity:.95; }
+.latar-illustration{ margin-top:40px; max-width:660px; opacity:.98; }
 .latar-illustration svg{ width:100%; height:auto; overflow:visible; }
+
 .li-track{ stroke:var(--line); stroke-width:2; fill:none; }
-.li-fill{ stroke:var(--amber); stroke-width:2; stroke-linecap:round; fill:none; opacity:0; }
+/* arus data yang terus mengalir di sepanjang jalur */
+.li-flux{
+  stroke:var(--amber); stroke-width:2; fill:none; opacity:.30;
+  stroke-linecap:round; stroke-dasharray:2 16; animation:liFlux 1.6s linear infinite;
+}
+@keyframes liFlux{ to{ stroke-dashoffset:-18; } }
+.li-fill{ stroke:url(#liGrad); stroke-width:2.6; stroke-linecap:round; fill:none; opacity:0; filter:url(#liGlow); }
+.li-sweep{ fill:url(#liSweepGrad); opacity:0; pointer-events:none; }
+
 .li-point{ fill:var(--bg-panel); stroke:var(--line); stroke-width:1.4; }
 .li-risk .li-point{ stroke:var(--alert); stroke-dasharray:2 2; }
-.li-lit{ fill:var(--amber); opacity:0; }
+.li-lit{ fill:var(--amber); opacity:0; filter:url(#liGlow); }
 .li-risk .li-lit{ fill:var(--alert); }
+
 .li-ripple{ fill:none; stroke:var(--amber); stroke-width:1.4; opacity:0; }
-.li-risk .li-ripple{ stroke:var(--alert); }
+.li-ripple2{ fill:none; stroke:var(--amber); stroke-width:.9; opacity:0; }
+.li-risk .li-ripple, .li-risk .li-ripple2{ stroke:var(--alert); }
+
+/* bingkai berputar khusus titik rawan */
+.li-diamond{
+  fill:none; stroke:var(--alert); stroke-width:1; opacity:0;
+  transform-origin:center; transform-box:fill-box;
+  animation:liSpin 7s linear infinite;
+}
+@keyframes liSpin{ to{ transform:rotate(360deg); } }
+
+/* percikan saat material tiba di titik */
+.li-spark{ opacity:0; }
+.li-spark .sp{ stroke:var(--amber); stroke-width:1.4; stroke-linecap:round; }
+.li-risk .li-spark .sp{ stroke:var(--alert); }
+
+.li-stem{ stroke:var(--line); stroke-width:1; opacity:0; }
+.li-num{ font-family:var(--mono); font-size:9.5px; fill:var(--ink-faint); opacity:0; letter-spacing:.06em; }
+.li-risk .li-num{ fill:var(--alert); }
+.li-tag{ font-family:var(--mono); font-size:8px; fill:var(--alert); letter-spacing:.16em; opacity:0; }
+
 .li-trail{ fill:var(--amber); opacity:0; }
-.li-halo{ fill:var(--amber); opacity:.26; }
+.li-halo{ fill:var(--amber); opacity:.26; filter:url(#liGlow); }
 .li-core{ fill:var(--amber); }
 .li-mover{ opacity:0; pointer-events:none; }
 

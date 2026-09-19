@@ -47,17 +47,106 @@
       <h2>Satu jalur produksi, dua metode ukur, dan laporan yang datang terlambat.</h2>
       <p class="lead">Alur produksi crude oil di site berjalan lewat delapan titik pencatatan manual. Setiap titik berpotensi menjadi tempat data melenceng dari kondisi sebenarnya — dan sejauh ini tidak ada satu pun yang tercatat otomatis.</p>
       <div class="latar-illustration" aria-hidden="true">
-        <svg viewBox="0 0 640 90" id="latarSvg">
+        <svg viewBox="0 0 640 132" id="latarSvg">
+          <defs>
+            <linearGradient id="liGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="var(--steel)"/>
+              <stop offset="55%" stop-color="var(--amber)"/>
+              <stop offset="100%" stop-color="var(--alert)"/>
+            </linearGradient>
+            <filter id="liGlow" x="-120%" y="-120%" width="340%" height="340%">
+              <feGaussianBlur stdDeviation="3.2" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <radialGradient id="liSweepGrad">
+              <stop offset="0%" stop-color="var(--amber)" stop-opacity=".30"/>
+              <stop offset="100%" stop-color="var(--amber)" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
           <line class="li-track" x1="20" y1="45" x2="620" y2="45"></line>
+          <line class="li-flux" x1="20" y1="45" x2="620" y2="45"></line>
           <line class="li-fill" id="liFill" x1="20" y1="45" x2="20" y2="45"></line>
-          <g class="li-node" transform="translate(20.0,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
-          <g class="li-node" transform="translate(105.71,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
-          <g class="li-node" transform="translate(191.43,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
-          <g class="li-node li-risk" transform="translate(277.14,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
-          <g class="li-node" transform="translate(362.86,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
-          <g class="li-node" transform="translate(448.57,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
-          <g class="li-node li-risk" transform="translate(534.29,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
-          <g class="li-node li-risk" transform="translate(620.0,45)"><circle class="li-ripple" r="6"></circle><circle class="li-point" r="6"></circle><circle class="li-lit" r="6"></circle></g>
+          <ellipse class="li-sweep" id="liSweep" cy="45" rx="86" ry="30"></ellipse>
+          <g class="li-node" transform="translate(20.0,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">01</text>
+          </g>
+          <g class="li-node" transform="translate(105.71,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">02</text>
+          </g>
+          <g class="li-node" transform="translate(191.43,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">03</text>
+          </g>
+          <g class="li-node li-risk" transform="translate(277.14,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <rect class="li-diamond" x="-11" y="-11" width="22" height="22"></rect>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">04</text>
+            <text class="li-tag" x="0" y="-22" text-anchor="middle">RAWAN</text>
+          </g>
+          <g class="li-node" transform="translate(362.86,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">05</text>
+          </g>
+          <g class="li-node" transform="translate(448.57,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">06</text>
+          </g>
+          <g class="li-node li-risk" transform="translate(534.29,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <rect class="li-diamond" x="-11" y="-11" width="22" height="22"></rect>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">07</text>
+            <text class="li-tag" x="0" y="-22" text-anchor="middle">RAWAN</text>
+          </g>
+          <g class="li-node li-risk" transform="translate(620.0,45)">
+            <circle class="li-ripple" r="6"></circle>
+            <circle class="li-ripple2" r="6"></circle>
+            <rect class="li-diamond" x="-11" y="-11" width="22" height="22"></rect>
+            <g class="li-spark"><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(0)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(60)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(120)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(180)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(240)"></line><line class="sp" x1="7" y1="0" x2="13" y2="0" transform="rotate(300)"></line></g>
+            <circle class="li-point" r="6"></circle>
+            <circle class="li-lit" r="6"></circle>
+            <line class="li-stem" x1="0" y1="11" x2="0" y2="20"></line>
+            <text class="li-num" x="0" y="34" text-anchor="middle">08</text>
+            <text class="li-tag" x="0" y="-22" text-anchor="middle">RAWAN</text>
+          </g>
+          <circle class="li-trail" cy="45" r="3"></circle>
+          <circle class="li-trail" cy="45" r="3"></circle>
           <circle class="li-trail" cy="45" r="3"></circle>
           <circle class="li-trail" cy="45" r="3"></circle>
           <circle class="li-trail" cy="45" r="3"></circle>

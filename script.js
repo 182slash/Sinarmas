@@ -276,14 +276,19 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
   if(!svg) return;
   const nodes = Array.from(svg.querySelectorAll('.li-node')).map(g=>({
     risk: g.classList.contains('li-risk'),
-    point: g.querySelector('.li-point'), lit: g.querySelector('.li-lit'), ripple: g.querySelector('.li-ripple')
+    point: g.querySelector('.li-point'), lit: g.querySelector('.li-lit'),
+    ripple: g.querySelector('.li-ripple'), ripple2: g.querySelector('.li-ripple2'),
+    diamond: g.querySelector('.li-diamond'), spark: g.querySelector('.li-spark'),
+    stem: g.querySelector('.li-stem'), num: g.querySelector('.li-num'),
+    tag: g.querySelector('.li-tag')
   }));
   const fill = document.getElementById('liFill');
+  const sweep = document.getElementById('liSweep');
   const mover = document.getElementById('liMover');
   const halo = mover.querySelector('.li-halo'), core = mover.querySelector('.li-core');
   const trails = Array.from(svg.querySelectorAll('.li-trail'));
   const X0 = 20, STEP = 600 / (nodes.length - 1), R = 6;
-  const ch = makeChoreo(nodes.map(n=> n.risk ? .65 : .3), .55, 1.1);
+  const ch = makeChoreo(nodes.map(n=> n.risk ? .75 : .32), .55, 1.2);
 
   function draw(tc, isStatic){
     const s = sampleChoreo(ch, tc);
@@ -291,32 +296,72 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
     const a = isStatic ? 0 : moverAlpha(ch, tc);
     const hold = isStatic ? 1 : holdAlpha(ch, tc);
 
+    // kepala material + cahaya sekitarnya
     mover.setAttribute('transform', `translate(${x.toFixed(2)},45)`);
     mover.style.opacity = a;
-    core.setAttribute('rx', (5 + 5*s.speed).toFixed(2)); core.setAttribute('ry', (5 - 1.2*s.speed).toFixed(2));
-    halo.setAttribute('rx', (10 + 7*s.speed).toFixed(2)); halo.setAttribute('ry', (10 - 1.5*s.speed).toFixed(2));
+    core.setAttribute('rx', (5 + 5.5*s.speed).toFixed(2)); core.setAttribute('ry', (5 - 1.2*s.speed).toFixed(2));
+    halo.setAttribute('rx', (10 + 9*s.speed).toFixed(2)); halo.setAttribute('ry', (10 - 1.5*s.speed).toFixed(2));
+
+    // sorot lembut yang ikut bergerak bersama material
+    sweep.setAttribute('cx', x.toFixed(2));
+    sweep.style.opacity = isStatic ? 0 : a * (.35 + .65*clamp01(s.speed*3));
+
     trails.forEach((tr, j)=>{
-      const d = (j + 1) * .09;
+      const d = (j + 1) * .07;
       const ts = sampleChoreo(ch, tc - d);
       tr.setAttribute('cx', (X0 + ts.pos * STEP).toFixed(2));
-      tr.style.opacity = tc - d >= 0 ? a * (.5 - j*.15) * clamp01(s.speed * 4) : 0;   // jejak hanya terlihat saat bergerak
+      tr.setAttribute('r', (3 - j*.35).toFixed(2));
+      tr.style.opacity = tc - d >= 0 ? a * (.55 - j*.1) * clamp01(s.speed * 4) : 0;
     });
+
     fill.setAttribute('x2', (isStatic ? X0 + ch.last*STEP : x).toFixed(2));
-    fill.style.opacity = isStatic ? .55 : .55 * moverAlpha(ch, tc);
+    fill.style.opacity = isStatic ? .8 : .8 * moverAlpha(ch, tc);
 
     nodes.forEach((n, i)=>{
       const age = tc - ch.arrive[i];
-      if(age < 0 && !isStatic){ n.lit.style.opacity = 0; n.ripple.style.opacity = 0; n.point.setAttribute('r', R); n.lit.setAttribute('r', R); return; }
+      const before = age < 0 && !isStatic;
+      if(before){
+        n.lit.style.opacity = 0; n.ripple.style.opacity = 0; n.ripple2.style.opacity = 0;
+        n.spark.style.opacity = 0; n.stem.style.opacity = 0; n.num.style.opacity = 0;
+        if(n.diamond) n.diamond.style.opacity = 0;
+        if(n.tag) n.tag.style.opacity = 0;
+        n.point.setAttribute('r', R); n.lit.setAttribute('r', R);
+        return;
+      }
       const t = isStatic ? 9 : age;
+
       // pegas teredam: titik "membesar" lalu menetap saat material tiba
-      const r = R + (n.risk ? 4 : 3) * Math.exp(-4.5*t) * Math.sin(14*t);
+      const r = R + (n.risk ? 4.5 : 3) * Math.exp(-4.5*t) * Math.sin(14*t);
       n.point.setAttribute('r', r.toFixed(2)); n.lit.setAttribute('r', (r - .6).toFixed(2));
-      n.lit.style.opacity = hold;
-      const k = t / (n.risk ? 1.1 : .85);
+      // titik rawan berdenyut terus — mengingatkan celah yang belum tertutup
+      const pulse = (n.risk && !isStatic) ? (.72 + .28*Math.sin(tc*4.2 + i)) : 1;
+      n.lit.style.opacity = hold * pulse;
+
+      // dua gelombang beriringan
+      const k = t / (n.risk ? 1.15 : .9);
       if(k >= 0 && k < 1){
-        n.ripple.setAttribute('r', (R + (n.risk ? 22 : 15) * easeOutCubic(k)).toFixed(2));
-        n.ripple.style.opacity = (n.risk ? .75 : .5) * (1 - k) * hold;
+        n.ripple.setAttribute('r', (R + (n.risk ? 24 : 16) * easeOutCubic(k)).toFixed(2));
+        n.ripple.style.opacity = (n.risk ? .8 : .5) * (1 - k) * hold;
       } else n.ripple.style.opacity = 0;
+      const k2 = (t - .18) / (n.risk ? 1.3 : 1.0);
+      if(k2 >= 0 && k2 < 1){
+        n.ripple2.setAttribute('r', (R + (n.risk ? 34 : 23) * easeOutCubic(k2)).toFixed(2));
+        n.ripple2.style.opacity = (n.risk ? .45 : .28) * (1 - k2) * hold;
+      } else n.ripple2.style.opacity = 0;
+
+      // percikan singkat tepat saat material menyentuh titik
+      const ks = t / .45;
+      if(ks >= 0 && ks < 1){
+        n.spark.setAttribute('transform', `scale(${(1 + 1.5*easeOutCubic(ks)).toFixed(3)})`);
+        n.spark.style.opacity = ((1 - ks) * (n.risk ? .95 : .7) * hold).toFixed(3);
+      } else n.spark.style.opacity = 0;
+
+      // penanda nomor titik naik perlahan setelah tersentuh
+      const kl = clamp01((t - .1) / .45);
+      n.stem.style.opacity = (.55 * kl * hold).toFixed(3);
+      n.num.style.opacity = (kl * hold).toFixed(3);
+      if(n.diamond) n.diamond.style.opacity = (.75 * kl * hold).toFixed(3);
+      if(n.tag) n.tag.style.opacity = (kl * hold * (isStatic ? 1 : .55 + .45*Math.sin(tc*4.2 + i))).toFixed(3);
     });
   }
   const loop = makeLoop(ch, draw);
