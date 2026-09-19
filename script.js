@@ -58,25 +58,8 @@ document.addEventListener('touchend', e=>{
 render();
 
 /* ---- interactive node/panel logic (independent of slide nav) ---- */
-
-// Flow diagram
-const flowStations = document.querySelectorAll('.station');
-const flowDetail = document.getElementById('flowDetail');
-flowStations.forEach(node=>{
-  node.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    flowStations.forEach(n=>n.classList.remove('active'));
-    node.classList.add('active');
-    const numText = node.querySelector('.num').textContent;
-    // tinggi kotak sudah fixed lewat CSS (.flow-detail{height:132px}) jadi ganti konten
-    // langsung tanpa fade-out dulu -- tidak ada lagi lompatan tinggi/posisi antar node.
-    flowDetail.innerHTML = `<span class="fd-num">${numText.toUpperCase()}</span><span class="fd-sep"></span><span class="fd-text">${node.dataset.detail}</span>`;
-    flowDetail.classList.remove('pulse');
-    // force reflow supaya animasi pulse bisa retrigger tiap klik
-    void flowDetail.offsetWidth;
-    flowDetail.classList.add('pulse');
-  });
-});
+/* (logika klik untuk diagram alur "01 — MEKANISME SITE" digabung ke dalam IIFE animasi
+   di bawah, supaya bisa menghentikan/membekukan animasi konektor tepat di node yang diklik) */
 
 // Problem node map with connecting-line light-up animation
 const problemData = {
@@ -114,10 +97,12 @@ pnodes.forEach(node=>{
     plines.forEach(l=>l.classList.remove('lit'));
     const d = problemData[node.dataset.id];
     d.lines.forEach(id=>document.getElementById(id).classList.add('lit'));
+    // ikon panel diambil langsung dari ikon node yang diklik, supaya selalu identik
+    const picoHTML = node.querySelector('.pico-wrap') ? node.querySelector('.pico-wrap').innerHTML : '';
     problemDetail.style.opacity = 0;
     problemDetail.classList.remove('pulse-in');
     setTimeout(()=>{
-      problemDetail.innerHTML = `<div class="tag">${d.tag}</div><h3>${d.title}</h3><p>${d.text}</p><div class="stat">${d.stat}</div><div class="stat-label">${d.statLabel}</div>`;
+      problemDetail.innerHTML = `<div class="tag-row"><div class="tag-icon"><svg viewBox="-10 -10 20 20">${picoHTML}</svg></div><div class="tag">${d.tag}</div></div><h3>${d.title}</h3><p>${d.text}</p><div class="stat">${d.stat}</div><div class="stat-label">${d.statLabel}</div>`;
       problemDetail.style.opacity = 1;
       problemDetail.classList.add('pulse-in');
     }, 120);
@@ -314,12 +299,14 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
   const mover = document.getElementById('flowMover');
   const halo = mover.querySelector('.mv-halo'), core = mover.querySelector('.mv-core');
   const trails = Array.from(svg.querySelectorAll('.mv-trail'));
+  const flowDetail = document.getElementById('flowDetail');
   const X0 = 70, STEP = 150, Y = 18;
   const risk = stations.map(st=>st.classList.contains('risk'));
   // titik rawan: material "tertahan" lebih lama; titik terakhir: singgah lebih lama sebelum memudar
   const dwells = risk.map((r, i)=> i === stations.length - 1 ? 1.2 : r ? 1.0 : .5);
   const ch = makeChoreo(dwells, .8, 1.3);
   const visitState = stations.map(()=>false), litState = stations.map(()=>false);
+  let frozenAt = null; // index node yang sedang dibekukan karena diklik user, atau null = animasi jalan normal
 
   function draw(tc, isStatic){
     const s = sampleChoreo(ch, tc);
@@ -348,12 +335,55 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
     });
   }
   const loop = makeLoop(ch, draw);
+
+  // membekukan konektor & material tepat di titik node yang diklik: bar terisi sampai
+  // node itu, material "parkir" di sana, dan node2 sebelumnya tetap menyala (sudah dilewati)
+  function freezeAt(i){
+    loop.stop();
+    frozenAt = i;
+    draw(ch.arrive[i], false);
+  }
+
+  // ikon node aktif ditampilkan ulang di kotak penjelasan; klon path ikon asli dari SVG
+  // (bukan gambar terpisah) supaya selalu identik dengan ikon di diagram.
+  function iconSvgFor(node){
+    const iconGroup = node.querySelector('.station-body > g');
+    const inner = iconGroup ? iconGroup.innerHTML : '';
+    return `<svg class="fd-icon-svg" viewBox="-22 -22 44 44" aria-hidden="true"><g>${inner}</g></svg>`;
+  }
+
+  stations.forEach((node, i)=>{
+    node.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      stations.forEach(n=>n.classList.remove('active'));
+      node.classList.add('active');
+      freezeAt(i);
+
+      const numText = node.querySelector('.num').textContent;
+      const title = node.dataset.title || '';
+      flowDetail.innerHTML =
+        `<div class="fd-icon-wrap">${iconSvgFor(node)}</div>` +
+        `<div class="fd-body">` +
+          `<div class="fd-head"><span class="fd-num">${numText.toUpperCase()}</span><span class="fd-title">${title}</span></div>` +
+          `<div class="fd-text">${node.dataset.detail}</div>` +
+        `</div>`;
+      flowDetail.classList.remove('pulse');
+      // force reflow supaya animasi pulse & fade-in teks bisa retrigger tiap klik
+      void flowDetail.offsetWidth;
+      flowDetail.classList.add('pulse');
+    });
+  });
+
   slideHooks.push(idx=>{
-    if(idx === 2){ loop.start(); }
-    else {
+    if(idx === 2){
+      if(frozenAt === null) loop.start();
+    } else {
       loop.stop();
+      frozenAt = null;
       visitState.fill(false); litState.fill(false);
-      stations.forEach((st, i)=>{ st.classList.remove('visit'); taps[i].classList.remove('lit'); });
+      stations.forEach((st, i)=>{ st.classList.remove('visit', 'active'); taps[i].classList.remove('lit'); });
+      flowDetail.classList.remove('pulse');
+      flowDetail.innerHTML = '<span class="fd-num">PILIH TITIK</span><span class="fd-sep"></span><span class="fd-text">Klik salah satu titik pada diagram untuk melihat detail proses dan risikonya.</span>';
     }
   });
 })();
