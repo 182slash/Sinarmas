@@ -85,13 +85,17 @@ p{color:var(--ink-dim); margin:0;}
   margin-top:6px; text-align:center; font-family:var(--mono); font-size:11px; color:var(--ink-faint); letter-spacing:.02em;
 }
 
-/* base pipeline track */
+/* base pipeline track + jalur terisi (panjangnya mengikuti posisi material, diatur script.js) */
 .pipe-track{ stroke:var(--line); stroke-width:2; fill:none; }
-.pipe-flow{
-  stroke:var(--amber); stroke-width:2; fill:none; opacity:.85;
-  stroke-dasharray:6 10; animation:pipeDash 1.1s linear infinite;
-}
-@keyframes pipeDash{ to{ stroke-dashoffset:-32; } }
+.pipe-fill{ stroke:var(--amber); stroke-width:2; stroke-linecap:round; fill:none; opacity:0; }
+
+/* sambungan pipa -> tiap station; menyala saat material sudah lewat */
+.tap line{ stroke:var(--line); stroke-width:1.6; transition:stroke .3s; }
+.tap circle{ fill:var(--bg); stroke:var(--line); stroke-width:1.6; transition:fill .3s, stroke .3s; }
+.tap.lit line{ stroke:var(--amber-dim); }
+.tap.lit circle{ fill:var(--amber); stroke:var(--amber); }
+.tap.risk.lit line{ stroke:var(--alert); }
+.tap.risk.lit circle{ fill:var(--alert); stroke:var(--alert); }
 
 /* station icon group */
 .station{ cursor:pointer; }
@@ -105,6 +109,15 @@ p{color:var(--ink-dim); margin:0;}
 .station.risk .plate{ stroke:var(--alert); stroke-dasharray:4 3; }
 .station.risk .num{ fill:var(--alert); }
 
+/* station yang sedang disinggahi material (bukan klik) */
+.station.visit .plate{ stroke:var(--amber-dim); fill:var(--bg-panel-raised); }
+.station.visit .icon{ stroke:var(--ink); }
+.station.visit .num{ fill:var(--amber); }
+.station.visit .label{ fill:var(--ink); }
+.station.risk.visit .plate{ stroke:var(--alert); }
+.station.risk.visit .icon{ stroke:var(--alert); }
+.station.risk.visit .num{ fill:var(--alert); }
+
 .station.active .plate{ stroke:var(--amber); stroke-width:2; fill:var(--bg-panel-raised); }
 .station.active .icon{ stroke:var(--amber); }
 .station.active .num{ fill:var(--amber); }
@@ -114,22 +127,27 @@ p{color:var(--ink-dim); margin:0;}
 .station.risk.active .num{ fill:var(--alert); }
 
 /* enlarge the whole station card (plate + icon + text) when it's the active/clicked one */
-.station-body{ transform-box:fill-box; transform-origin:center; transition:transform .3s cubic-bezier(.22,.61,.36,1); }
+.station-body{ transform-box:fill-box; transform-origin:center; transition:transform .45s cubic-bezier(.34,1.45,.64,1); }
+.station.visit .station-body{ transform:scale(1.04); }
 .station:hover .station-body{ transform:scale(1.05); }
 .station.active .station-body{ transform:scale(1.18); }
-.station.active{ z-index:5; }
 
 /* persistent warning pulse ring on risk stations, always animating to draw attention */
-.risk-ring{ fill:none; stroke:var(--alert); stroke-width:1.4; opacity:0; transform-origin:center; }
+/* transform-box:fill-box WAJIB: tanpa itu titik-asal "center" merujuk ke seluruh viewBox dan ring melayang keluar dari station */
+.risk-ring{ fill:none; stroke:var(--alert); stroke-width:1.4; opacity:0; transform-box:fill-box; transform-origin:center; pointer-events:none; }
 .station.risk .risk-ring{ animation:riskPulse 2.4s ease-out infinite; }
 @keyframes riskPulse{
-  0%{ opacity:.6; transform:scale(.82); }
-  70%{ opacity:0; transform:scale(1.35); }
-  100%{ opacity:0; transform:scale(1.35); }
+  0%{ opacity:.55; transform:scale(1); }
+  70%{ opacity:0; transform:scale(1.22); }
+  100%{ opacity:0; transform:scale(1.22); }
 }
 
-/* traveling particles representing material moving through the line */
-.particle{ filter:drop-shadow(0 0 4px rgba(201,138,44,.8)); }
+/* material yang bergerak di jalur: posisi/bentuk dihitung per-frame di script.js */
+.flow-mover, #flowMover{ pointer-events:none; }
+.mv-core{ fill:var(--amber); }
+.mv-halo{ fill:var(--amber); opacity:.26; }
+.mv-trail{ fill:var(--amber); opacity:0; }
+#flowMover{ opacity:0; }
 
 .flow-detail{
   margin-top:30px; padding:26px 30px; background:var(--bg-panel); border-left:3px solid var(--amber);
@@ -145,7 +163,7 @@ p{color:var(--ink-dim); margin:0;}
 .pnode{cursor:pointer;}
 .pnode circle{transition:r .25s, fill .25s;}
 .pnode.active circle:not(.pulse):not(.glow-arc){r:11;}
-.pnode text{font-family:var(--mono); font-size:11px; fill:var(--ink-dim); pointer-events:none; transition:fill .25s;}
+.pnode text{font-family:var(--mono); font-size:11.5px; fill:var(--ink-dim); pointer-events:none; transition:fill .25s;}
 .pnode.active text{fill:var(--ink);}
 
 /* connecting lines: default static, "lit" ones animate like a data-connection beam */
@@ -217,22 +235,52 @@ p{color:var(--ink-dim); margin:0;}
 .rumusan-detail p{font-size:14.5px; max-width:none;}
 
 /* ---------- modules slide ---------- */
-.modules{margin-top:36px; display:flex; flex-direction:column; gap:1px; background:var(--line-soft); max-height:56vh; overflow-y:auto;}
+/* tanpa scroll: tinggi area modul ditentukan isinya (dan dikunci ke state terpanjang oleh script.js supaya tidak melompat) */
+.modules{margin-top:clamp(16px,3.6vh,36px); display:flex; flex-direction:column;}
 .module{background:var(--bg);}
-.module-head{display:grid; grid-template-columns:70px 1fr 22px; align-items:center; gap:20px; padding:20px 4px; cursor:pointer;}
+.module + .module{border-top:1px solid var(--line-soft);}
+.module-head{
+  display:grid; grid-template-columns:34px 70px 1fr 22px; align-items:center; gap:20px;
+  padding:clamp(8px,2.1vh,20px) 4px; cursor:pointer;
+}
 .module-head .mnum{font-family:var(--mono); font-size:12px; color:var(--amber);}
-.module-head h3{font-family:var(--sans); font-size:17px; font-weight:600;}
+.module-head h3{font-family:var(--sans); font-size:clamp(15px,2.1vh,17px); font-weight:600;}
 .module-head .chev{font-family:var(--mono); color:var(--ink-faint); transition:transform .25s;}
 .module.open .chev{transform:rotate(45deg);}
-.module-body{max-height:0; overflow:hidden; transition:max-height .35s ease;}
-.module.open .module-body{max-height:400px;}
-.module-body-inner{padding:0 4px 22px 90px; display:grid; grid-template-columns:1fr 1fr; gap:28px;}
-@media(max-width:900px){.module-body-inner{grid-template-columns:1fr; padding-left:4px;}}
-.module-body-inner h4{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin:0 0 10px;}
+/* buka/tutup lewat grid-template-rows (0fr -> 1fr): tidak ada batas tinggi tetap yang bisa memotong isi */
+.module-body{display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s ease;}
+.module.open .module-body{grid-template-rows:1fr;}
+.module-body-inner{min-height:0; overflow:hidden; padding:0 4px 0 90px; display:grid; grid-template-columns:1fr 1fr; gap:0 28px;}
+.module-body-inner > div{padding-bottom:clamp(10px,2.2vh,22px);}
+.module-body-inner h4{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin:0 0 clamp(4px,1vh,10px);}
 .module-body-inner ul{margin:0; padding:0; list-style:none;}
-.module-body-inner li{font-size:13.5px; color:var(--ink-dim); padding:7px 0 7px 16px; position:relative; border-top:1px solid var(--line-soft);}
+.module-body-inner li{font-size:clamp(12.5px,1.85vh,13.5px); color:var(--ink-dim); padding:clamp(4px,.85vh,7px) 0 clamp(4px,.85vh,7px) 16px; position:relative; border-top:1px solid var(--line-soft);}
 .module-body-inner li:first-child{border-top:none;}
 .module-body-inner li:before{content:"—"; position:absolute; left:0; color:var(--ink-faint);}
+
+/* layar pendek (laptop kecil): rapatkan slide solusi supaya semua modul muat tanpa scroll */
+@media(max-height:760px){
+  .slide-solusi{padding-top:60px; padding-bottom:84px;}
+  .slide-solusi h2{max-width:none;}
+}
+
+/* HP: judul modul di bawah label MOD, bukan berbagi baris dengan kolom sempit */
+@media(max-width:900px){
+  .module-head{
+    grid-template-columns:34px 1fr 22px; grid-template-areas:"icon num chev" "icon title chev";
+    gap:1px 14px; padding:clamp(7px,1.5vh,12px) 4px;
+  }
+  .module-head .module-icon{grid-area:icon;}
+  .module-head .mnum{grid-area:num; font-size:11px;}
+  .module-head h3{grid-area:title; font-size:15px; line-height:1.25;}
+  .module-head .chev{grid-area:chev;}
+  .module-body-inner{grid-template-columns:1fr; padding-left:4px; gap:0;}
+  .module-body-inner > div{padding-bottom:8px;}
+  .module-body-inner li{font-size:12.5px; line-height:1.35; padding:4px 0 4px 14px;}
+  .slide-solusi{padding-top:52px; padding-bottom:80px;}
+  .slide-solusi .kicker{margin-bottom:10px;}
+  .slide-solusi .modules{margin-top:14px;}
+}
 
 /* ---------- roadmap slide ---------- */
 .rsteps{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:56px; position:relative;}
@@ -292,19 +340,25 @@ p{color:var(--ink-dim); margin:0;}
 @keyframes tiOrbitA{ from{ offset-distance:0%; } to{ offset-distance:100%; } }
 @keyframes tiOrbitB{ from{ offset-distance:0%; } to{ offset-distance:-100%; } }
 
-/* slide 2: latar belakang mini pipeline */
-.latar-illustration{ margin-top:44px; max-width:640px; opacity:.9; }
+/* slide 2: latar belakang mini pipeline (semua gerak dihitung per-frame di script.js) */
+.latar-illustration{ margin-top:44px; max-width:640px; opacity:.95; }
 .latar-illustration svg{ width:100%; height:auto; overflow:visible; }
 .li-track{ stroke:var(--line); stroke-width:2; fill:none; }
-.li-flow{ stroke:var(--amber); stroke-width:2; fill:none; opacity:.55; stroke-dasharray:6 10; animation:pipeDash 1.1s linear infinite; }
+.li-fill{ stroke:var(--amber); stroke-width:2; stroke-linecap:round; fill:none; opacity:0; }
 .li-point{ fill:var(--bg-panel); stroke:var(--line); stroke-width:1.4; }
-.li-point.li-risk{ stroke:var(--alert); stroke-dasharray:2 2; }
-.li-mover{ fill:var(--amber); filter:drop-shadow(0 0 5px rgba(201,138,44,.8)); }
+.li-risk .li-point{ stroke:var(--alert); stroke-dasharray:2 2; }
+.li-lit{ fill:var(--amber); opacity:0; }
+.li-risk .li-lit{ fill:var(--alert); }
+.li-ripple{ fill:none; stroke:var(--amber); stroke-width:1.4; opacity:0; }
+.li-risk .li-ripple{ stroke:var(--alert); }
+.li-trail{ fill:var(--amber); opacity:0; }
+.li-halo{ fill:var(--amber); opacity:.26; }
+.li-core{ fill:var(--amber); }
+.li-mover{ opacity:0; pointer-events:none; }
 
 /* slide 6: module icons */
 .module-icon{ display:flex; align-items:center; justify-content:center; width:30px; height:30px; }
 .module-icon svg{ width:100%; height:100%; overflow:visible; stroke:var(--amber); stroke-width:1.6; fill:none; stroke-linecap:round; stroke-linejoin:round; }
-.module-head{ grid-template-columns:34px 70px 1fr 22px !important; }
 .mi-dashboard .mi-bar{ fill:var(--amber); stroke:none; transform-box:fill-box; transform-origin:bottom; animation:miBar 1.8s ease-in-out infinite; }
 .mi-dashboard .mi-bar:nth-child(2){ animation-delay:.2s; }
 .mi-dashboard .mi-bar:nth-child(3){ animation-delay:.4s; }
