@@ -332,13 +332,6 @@ p{color:var(--ink-dim); margin:0;}
 .rstep p{font-size:14.5px;}
 @media(max-width:900px){.rsteps{grid-template-columns:1fr;} .rline{display:none;}}
 
-/* ---------- risk grid slide ---------- */
-.risk-grid{margin-top:40px; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-soft);}
-.risk-card{background:var(--bg); padding:22px; cursor:default; transition:background .2s;}
-.risk-card:hover{background:var(--bg-panel);}
-.risk-card .tag{font-family:var(--mono); font-size:11px; color:var(--alert); margin-bottom:10px;}
-.risk-card p{font-size:13.5px;}
-@media(max-width:900px){.risk-grid{grid-template-columns:1fr;}}
 
 /* ---------- closing slide (gambar kerja arsitektural) ---------- */
 .closing{ overflow:hidden; }
@@ -488,13 +481,6 @@ p{color:var(--ink-dim); margin:0;}
 @keyframes miRock{ 0%,100%{ transform:rotate(-4deg); } 50%{ transform:rotate(4deg); } }
 .mi-route-path{ stroke-dasharray:4 5; animation:dashFlow .9s linear infinite; }
 
-/* slide 8: risk icons */
-.risk-card{ position:relative; }
-.risk-icon{ display:inline-flex; width:20px; height:20px; margin-bottom:10px; }
-.risk-icon svg{ width:100%; height:100%; stroke:var(--alert); stroke-width:1.8; fill:none; stroke-linecap:round; }
-.ri-ring{ transform-box:fill-box; transform-origin:center; animation:riPulse 2.4s ease-out infinite; }
-.ri-dot{ fill:var(--alert); stroke:none; }
-@keyframes riPulse{ 0%{ opacity:1; transform:scale(1); } 70%{ opacity:.15; transform:scale(1.18); } 100%{ opacity:.15; transform:scale(1.18); } }
 
 @media(max-width:900px){
   .title-illustration{ display:none; }

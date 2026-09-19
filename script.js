@@ -4,7 +4,7 @@ let current = 0;
 const fitTop = () => window.innerWidth <= 900 ? 100 : 84;   // batas atas area konten (di bawah logo watermark)
 const slideHooks = [];   // dipanggil tiap kali slide berganti (dipakai animasi slide 2 & 3)
 
-const labels = ['TITLE','LATAR BELAKANG','MEKANISME SITE','IDENTIFIKASI MASALAH','RUMUSAN MASALAH','SOLUSI','ROADMAP','RISIKO','PENUTUP'];
+const labels = ['TITLE','LATAR BELAKANG','MEKANISME SITE','IDENTIFIKASI MASALAH','RUMUSAN MASALAH','SOLUSI','ROADMAP','PENUTUP'];
 
 const dotsWrap = document.getElementById('dots');
 slides.forEach((s,i)=>{
@@ -498,11 +498,11 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(reserve);
 })();
 
-/* ---- Slide 09: penutup — gambar kerja arsitektural ----
+/* ---- Slide 08: penutup — gambar kerja arsitektural ----
    Diputar ulang setiap kali slide dibuka. Semua gerak utama ada di CSS (kelas .play);
    script hanya memecah judul jadi kata, menghitung mundur "90 hari", dan parallax halus. */
 (function(){
-  const idx = 8, slide = slides[idx];
+  const idx = slides.length - 1, slide = slides[idx];   // penutup = slide terakhir
   if(!slide) return;
   const title = document.getElementById('closingTitle');
   const cCount = document.getElementById('cCount');
