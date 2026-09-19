@@ -80,6 +80,16 @@ p{color:var(--ink-dim); margin:0;}
 .title-slide h1{
   font-family:var(--sans); font-weight:600; font-size:clamp(34px,min(6vw,8.2vh),68px); line-height:1.05; max-width:15ch;
 }
+.h1-impact{ font-weight:700; font-size:clamp(48px,min(8.5vw,11.5vh),96px); letter-spacing:-.01em; max-width:18ch !important; }
+.h1-impact .h1-eq{ color:var(--ink-faint); font-weight:500; padding:0 .05em; }
+.h1-impact .h1-hot{
+  background:linear-gradient(100deg, var(--amber) 0%, var(--alert) 65%, var(--alert) 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 0 22px rgba(201,74,44,.35));
+  position:relative; display:inline-block;
+}
+@keyframes h1HotPulse{0%,100%{filter:drop-shadow(0 0 18px rgba(201,74,44,.30));} 50%{filter:drop-shadow(0 0 30px rgba(201,74,44,.55));}}
+.h1-impact .h1-hot{ animation:h1HotPulse 2.6s ease-in-out infinite; }
 .title-meta{margin-top:52px; display:grid; grid-template-columns:repeat(3,auto); gap:44px;}
 .title-meta div{font-family:var(--mono); font-size:12px; color:var(--ink-faint);}
 .title-meta strong{display:block; font-family:var(--sans); font-size:15px; color:var(--ink); font-weight:600; margin-bottom:4px;}
@@ -390,6 +400,23 @@ p{color:var(--ink-dim); margin:0;}
 .rstep.active h4{color:#F6F1E6;}
 .rstep p{font-size:16px; line-height:1.55; transition:color .25s;}
 .rstep.active p{color:var(--ink);}
+/* FASE 0 — status darurat/urgent: panel & titik bergradasi merah, judul fase merah tersendiri */
+.rstep-urgent:before{
+  background:linear-gradient(180deg, rgba(180,87,63,.18), rgba(180,87,63,0) 78%) !important;
+  border-color:rgba(180,87,63,.55) !important;
+  box-shadow:inset 0 1px 0 rgba(180,87,63,.32), 0 18px 38px -20px rgba(180,87,63,.85) !important;
+}
+.rstep-urgent .dot{
+  border-color:var(--alert) !important; background:var(--alert) !important;
+  box-shadow:0 0 0 5px rgba(180,87,63,.22), 0 0 18px 4px rgba(180,87,63,.6) !important;
+  animation:dotPulseAlert 1.8s ease-in-out infinite !important;
+}
+.rstep-urgent .dot:before, .rstep-urgent .dot:after{ border-color:var(--alert) !important; }
+@keyframes dotPulseAlert{0%,100%{box-shadow:0 0 0 5px rgba(180,87,63,.22), 0 0 18px 4px rgba(180,87,63,.5);} 50%{box-shadow:0 0 0 9px rgba(180,87,63,.1), 0 0 26px 6px rgba(180,87,63,.28);}}
+.rstep-urgent .phase{
+  color:var(--alert) !important; font-weight:600; letter-spacing:.08em;
+  text-shadow:0 0 14px rgba(180,87,63,.5);
+}
 @media(max-width:900px){.rsteps{grid-template-columns:1fr;} .rline{display:none;} .rstep.active{transform:none;}}
 
 
