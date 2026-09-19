@@ -48,7 +48,7 @@ p{color:var(--ink-dim); margin:0;}
 .chrome{position:fixed; inset:0; z-index:10; pointer-events:none;}
 .topbar{
   position:absolute; top:0; left:0; right:0; height:56px; display:flex; align-items:center;
-  justify-content:space-between; padding:0 32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint);
+  justify-content:space-between; padding:0 32px 0 108px; font-family:var(--mono); font-size:12px; color:var(--ink-faint);
 }
 .wm-logo{
   position:absolute; bottom:52px; right:32px; height:58px; width:auto;
@@ -59,7 +59,7 @@ p{color:var(--ink-dim); margin:0;}
 .brand .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
 .progress-track{position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--line-soft);}
 .progress-fill{height:100%; background:var(--amber); transition:width .4s ease; width:0%;}
-.slide-counter{position:absolute; bottom:24px; right:32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint); pointer-events:auto;}
+.slide-counter{position:absolute; top:0; left:32px; height:56px; display:flex; align-items:center; font-family:var(--mono); font-size:12px; color:var(--ink-faint); pointer-events:auto;}
 .slide-counter b{color:var(--ink);}
 .arrows{position:absolute; bottom:20px; left:32px; display:flex; gap:10px; pointer-events:auto;}
 .arrow-btn{
@@ -179,19 +179,25 @@ p{color:var(--ink-dim); margin:0;}
 .flow-detail .fd-text{ width:100%; }
 
 /* ---------- problem node-map slide ---------- */
-.problem-map{display:grid; grid-template-columns:1.05fr 1fr; gap:56px; margin-top:40px; align-items:start; position:relative;}
+.problem-map{display:grid; grid-template-columns:1.22fr 1fr; gap:48px; margin-top:34px; align-items:center; position:relative;}
 @media(max-width:900px){.problem-map{grid-template-columns:1fr;}}
 .pnode{cursor:pointer;}
-.pnode circle{transition:r .25s, fill .25s;}
-.pnode.active circle:not(.pulse):not(.glow-arc){r:11;}
-.pnode text{font-family:var(--mono); font-size:11.5px; fill:var(--ink-dim); pointer-events:none; transition:fill .25s;}
-.pnode.active text{fill:var(--ink);}
+.pnode circle{transition:r .25s, fill .25s, filter .25s;}
+.pnode circle:not(.pulse):not(.glow-arc){r:10.5;}
+.pnode:hover circle:not(.pulse):not(.glow-arc){fill:var(--amber-dim);}
+.pnode.active circle:not(.pulse):not(.glow-arc){r:13; filter:drop-shadow(0 0 10px rgba(201,138,44,.85));}
+.pnode text{font-family:var(--mono); font-size:13.5px; letter-spacing:.02em; fill:var(--ink-dim); pointer-events:none; transition:fill .25s;}
+.pnode.active text{fill:#F6F1E6; filter:drop-shadow(0 0 8px rgba(201,138,44,.45));}
+/* simpul non-aktif tetap "bernapas" pelan supaya peta terasa hidup */
+@keyframes pnodeBreathe{0%,100%{opacity:.55;} 50%{opacity:1;}}
+.pnode:not(.active) circle:not(.pulse):not(.glow-arc){animation:pnodeBreathe 3.4s ease-in-out infinite;}
 
 /* connecting lines: default static, "lit" ones animate like a data-connection beam */
-.pline{stroke:var(--line); stroke-width:1; fill:none;}
+.pline{stroke:var(--line); stroke-width:1.2; fill:none;}
 .pline.lit{
-  stroke:var(--amber); stroke-width:1.4;
+  stroke:var(--amber); stroke-width:1.8;
   stroke-dasharray:5 7;
+  filter:drop-shadow(0 0 5px rgba(201,138,44,.55));
   animation:dashFlow 1s linear infinite;
 }
 @keyframes dashFlow{ to{ stroke-dashoffset:-24; } }
@@ -200,13 +206,13 @@ p{color:var(--ink-dim); margin:0;}
 .glow-ring{ opacity:0; transform-origin:0 0; }
 .pnode.active .glow-ring{ opacity:1; animation:glowSpin 2.6s linear infinite; }
 .glow-arc{
-  fill:none; stroke:var(--amber); stroke-width:2; stroke-linecap:round;
-  stroke-dasharray:14 58; filter:drop-shadow(0 0 4px rgba(201,138,44,.85));
+  fill:none; stroke:var(--amber); stroke-width:2.4; stroke-linecap:round; r:19;
+  stroke-dasharray:18 74; filter:drop-shadow(0 0 6px rgba(201,138,44,.95));
 }
 @keyframes glowSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
 
 /* soft pulse ring underneath, still used for a secondary breathing glow */
-@keyframes nodePulse{0%{opacity:.5; r:12;} 100%{opacity:0; r:20;}}
+@keyframes nodePulse{0%{opacity:.6; r:14;} 100%{opacity:0; r:30;}}
 .pnode.active .pulse{animation:nodePulse 1.8s ease-out infinite;}
 
 .problem-detail{
@@ -270,11 +276,11 @@ p{color:var(--ink-dim); margin:0;}
 .module{background:var(--bg);}
 .module + .module{border-top:1px solid var(--line-soft);}
 .module-head{
-  display:grid; grid-template-columns:34px 70px 1fr 22px; align-items:center; gap:20px;
+  display:grid; grid-template-columns:37px 77px 1fr 24px; align-items:center; gap:20px;
   padding:clamp(8px,2.1vh,20px) 4px; cursor:pointer;
 }
-.module-head .mnum{font-family:var(--mono); font-size:12px; color:var(--amber);}
-.module-head h3{font-family:var(--sans); font-size:clamp(15px,2.1vh,17px); font-weight:600;}
+.module-head .mnum{font-family:var(--mono); font-size:13.2px; color:var(--amber);}
+.module-head h3{font-family:var(--sans); font-size:clamp(16.5px,2.3vh,18.7px); font-weight:600;}
 .module-head .chev{font-family:var(--mono); color:var(--ink-faint); transition:transform .25s;}
 .module.open .chev{transform:rotate(45deg);}
 /* buka/tutup lewat grid-template-rows (0fr -> 1fr): tidak ada batas tinggi tetap yang bisa memotong isi */
@@ -282,11 +288,14 @@ p{color:var(--ink-dim); margin:0;}
 .module.open .module-body{grid-template-rows:1fr;}
 .module-body-inner{min-height:0; overflow:hidden; padding:0 4px 0 90px; display:grid; grid-template-columns:1fr 1fr; gap:0 28px;}
 .module-body-inner > div{padding-bottom:clamp(10px,2.2vh,22px);}
-.module-body-inner h4{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin:0 0 clamp(4px,1vh,10px);}
+.module-body-inner h4{font-family:var(--mono); font-size:12.1px; letter-spacing:.05em; color:var(--ink-faint); margin:0 0 clamp(4px,1vh,10px);}
 .module-body-inner ul{margin:0; padding:0; list-style:none;}
-.module-body-inner li{font-size:clamp(12.5px,1.85vh,13.5px); color:var(--ink-dim); padding:clamp(4px,.85vh,7px) 0 clamp(4px,.85vh,7px) 16px; position:relative; border-top:1px solid var(--line-soft);}
+.module-body-inner li{font-size:clamp(13.8px,2.05vh,14.9px); line-height:1.5; color:var(--ink-dim); padding:clamp(5px,.95vh,8px) 0 clamp(5px,.95vh,8px) 20px; position:relative; border-top:1px solid var(--line-soft);}
 .module-body-inner li:first-child{border-top:none;}
-.module-body-inner li:before{content:"—"; position:absolute; left:0; color:var(--ink-faint);}
+.module-body-inner li:before{
+  content:""; position:absolute; left:2px; top:.72em; width:6px; height:6px; border-radius:50%;
+  background:var(--amber); box-shadow:0 0 7px rgba(201,138,44,.55);
+}
 
 /* layar pendek (laptop kecil): rapatkan slide solusi supaya semua modul muat tanpa scroll */
 @media(max-height:760px){
@@ -306,14 +315,14 @@ p{color:var(--ink-dim); margin:0;}
   .module-head .chev{grid-area:chev;}
   .module-body-inner{grid-template-columns:1fr; padding-left:4px; gap:0;}
   .module-body-inner > div{padding-bottom:8px;}
-  .module-body-inner li{font-size:12.5px; line-height:1.35; padding:4px 0 4px 14px;}
+  .module-body-inner li{font-size:13.8px; line-height:1.45; padding:4px 0 4px 18px;}
   .slide-solusi{padding-top:52px; padding-bottom:80px;}
   .slide-solusi .kicker{margin-bottom:10px;}
   .slide-solusi .modules{margin-top:14px;}
 }
 
 /* ---------- roadmap slide ---------- */
-.rsteps{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:56px; position:relative;}
+.rsteps{display:grid; grid-template-columns:repeat(4,1fr); gap:34px; margin-top:60px; align-items:start; position:relative;}
 
 /* rel jalur: arus halus terus berjalan walau fase belum dipilih */
 .rline{position:absolute; top:11px; left:0; right:0; height:2px; background:var(--line); overflow:hidden;}
@@ -337,12 +346,12 @@ p{color:var(--ink-dim); margin:0;}
 @keyframes railGlow{0%,100%{opacity:.5; transform:scale(.85);} 50%{opacity:1; transform:scale(1.25);}}
 
 .rstep{
-  padding-top:32px; position:relative; cursor:pointer;
+  padding:34px 14px 18px 0; position:relative; cursor:pointer;
   transition:transform .35s cubic-bezier(.22,.61,.36,1);
 }
 /* panel latar fase — muncul saat disorot / dipilih */
 .rstep:before{
-  content:""; position:absolute; left:-16px; right:-8px; top:26px; bottom:-16px; z-index:0;
+  content:""; position:absolute; left:-16px; right:-4px; top:26px; bottom:0; z-index:0;
   border:1px solid transparent; background:transparent;
   transition:background .3s, border-color .3s, box-shadow .3s;
 }
@@ -375,11 +384,11 @@ p{color:var(--ink-dim); margin:0;}
 @keyframes dotRipple{ 0%{transform:scale(1); opacity:.75;} 70%{opacity:0;} 100%{transform:scale(3.6); opacity:0;} }
 @keyframes dotPulse{0%,100%{box-shadow:0 0 0 5px rgba(201,138,44,.18), 0 0 16px 3px rgba(201,138,44,.45);} 50%{box-shadow:0 0 0 9px rgba(201,138,44,.08), 0 0 22px 5px rgba(201,138,44,.22);}}
 
-.rstep .phase{font-family:var(--mono); font-size:11.5px; color:var(--ink-faint); margin-bottom:7px; letter-spacing:.06em; transition:color .25s;}
+.rstep .phase{font-family:var(--mono); font-size:12.65px; color:var(--ink-faint); margin-bottom:7px; letter-spacing:.06em; transition:color .25s;}
 .rstep.active .phase{color:var(--amber);}
-.rstep h4{font-size:17px; margin-bottom:9px; transition:color .25s;}
+.rstep h4{font-size:18.7px; line-height:1.3; margin-bottom:10px; transition:color .25s;}
 .rstep.active h4{color:#F6F1E6;}
-.rstep p{font-size:14.5px; transition:color .25s;}
+.rstep p{font-size:16px; line-height:1.55; transition:color .25s;}
 .rstep.active p{color:var(--ink);}
 @media(max-width:900px){.rsteps{grid-template-columns:1fr;} .rline{display:none;} .rstep.active{transform:none;}}
 
@@ -550,7 +559,7 @@ p{color:var(--ink-dim); margin:0;}
 .li-mover{ opacity:0; pointer-events:none; }
 
 /* slide 6: module icons */
-.module-icon{ display:flex; align-items:center; justify-content:center; width:30px; height:30px; }
+.module-icon{ display:flex; align-items:center; justify-content:center; width:33px; height:33px; }
 .module-icon svg{ width:100%; height:100%; overflow:visible; stroke:var(--amber); stroke-width:1.6; fill:none; stroke-linecap:round; stroke-linejoin:round; }
 .mi-dashboard .mi-bar{ fill:var(--amber); stroke:none; transform-box:fill-box; transform-origin:bottom; animation:miBar 1.8s ease-in-out infinite; }
 .mi-dashboard .mi-bar:nth-child(2){ animation-delay:.2s; }
