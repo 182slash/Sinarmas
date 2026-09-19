@@ -68,11 +68,13 @@ flowStations.forEach(node=>{
     flowStations.forEach(n=>n.classList.remove('active'));
     node.classList.add('active');
     const numText = node.querySelector('.num').textContent;
-    flowDetail.style.opacity = 0;
-    setTimeout(()=>{
-      flowDetail.innerHTML = `<span class="fd-num">${numText.toUpperCase()}</span><span class="fd-text">${node.dataset.detail}</span>`;
-      flowDetail.style.opacity = 1;
-    }, 120);
+    // tinggi kotak sudah fixed lewat CSS (.flow-detail{height:132px}) jadi ganti konten
+    // langsung tanpa fade-out dulu -- tidak ada lagi lompatan tinggi/posisi antar node.
+    flowDetail.innerHTML = `<span class="fd-num">${numText.toUpperCase()}</span><span class="fd-sep"></span><span class="fd-text">${node.dataset.detail}</span>`;
+    flowDetail.classList.remove('pulse');
+    // force reflow supaya animasi pulse bisa retrigger tiap klik
+    void flowDetail.offsetWidth;
+    flowDetail.classList.add('pulse');
   });
 });
 

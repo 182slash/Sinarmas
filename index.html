@@ -12,6 +12,7 @@
 <body>
 
 <div class="bg-grid"></div>
+<div class="page-watermark" aria-hidden="true"></div>
 <div class="deck" id="deck">
 
   <!-- SLIDE 1 -->
@@ -90,6 +91,7 @@
           <!-- 01 Truk masuk -->
           <g class="station" data-detail="Truk pemasok — kebun sendiri maupun kebun masyarakat — masuk ke area site membawa raw material (TBS)." transform="translate(70,0)">
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <path class="icon" d="M-15,6 h19 v-11 h9 l6,6 v5 h3 M-15,6 v-6 h19 v6"></path>
@@ -105,6 +107,7 @@
           <!-- 02 Timbang bruto -->
           <g class="station" data-detail="Truk beserta muatan ditimbang di jembatan timbang — angka bruto pertama, sepenuhnya bergantung pada input manual operator." transform="translate(220,0)">
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <path class="icon" d="M-14,9 h28 M0,9 v-11 M-11,-2 l11,-6 11,6"></path>
@@ -120,6 +123,7 @@
           <!-- 03 Bongkar muatan -->
           <g class="station" data-detail="Raw material dibongkar dari truk ke area pengolahan." transform="translate(370,0)">
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <rect class="icon" x="-10" y="0" width="20" height="11"></rect>
@@ -135,6 +139,7 @@
           <g class="station risk" data-detail="Titik rawan #1 — Truk kosong ditimbang ulang untuk berat net. Selisih bruto–tara inilah dasar kuota harian, dan hanya tercatat di kertas." transform="translate(520,0)">
             <rect class="risk-ring" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <path class="icon" d="M-14,9 h28 M0,9 v-11 M-11,-2 l11,-6 11,6"></path>
@@ -150,6 +155,7 @@
           <!-- 05 Diolah -->
           <g class="station" data-detail="Raw material diproses di penggilingan menjadi crude oil. Ekspektasi hasil 22–25% dari berat raw material." transform="translate(670,0)">
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <circle class="icon" r="8"></circle>
@@ -164,6 +170,7 @@
           <!-- 06 Checksheet lapor (moved right after milling — report reflects production, not shipping) -->
           <g class="station" data-detail="Checksheet hasil pengolahan baru dilaporkan 1–2 hari setelah crude oil selesai diolah. Laporan ini soal hasil produksi — jedanya sudah mulai di sini, sebelum muatan sempat dikirim." transform="translate(820,0)">
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <rect class="icon" x="-7" y="-11" width="14" height="21" rx="1"></rect>
@@ -179,6 +186,7 @@
           <g class="station risk" data-detail="Titik rawan #2 — Crude oil dimuat ke kapal tongkang, tinggi minyak diukur manual. Metode ukur pertama dari dua metode berbeda." transform="translate(970,0)">
             <rect class="risk-ring" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <path class="icon" d="M-14,5 h28 l-4,8 h-20 z"></path>
@@ -194,6 +202,7 @@
           <g class="station risk" data-detail="Titik rawan #3 — Saat bongkar, crude oil diukur ulang lewat selang, metode berbeda dari saat muat — selisih/susut sulit dilacak." transform="translate(1120,0)">
             <rect class="risk-ring" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g class="station-body">
+            <rect class="loom-rect" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
             <g transform="translate(0,58)">
               <circle class="icon" r="9"></circle>
@@ -215,7 +224,7 @@
         </svg>
         <div class="flow-caption">alur berkelanjutan dari raw material masuk hingga laporan terbit — titik bergaris putus adalah titik ukur manual yang rawan</div>
       </div>
-      <div class="flow-detail" id="flowDetail"><span class="fd-num">PILIH TITIK</span><span class="fd-text">Klik salah satu titik pada diagram untuk melihat detail proses dan risikonya.</span></div>
+      <div class="flow-detail" id="flowDetail"><span class="fd-num">PILIH TITIK</span><span class="fd-sep"></span><span class="fd-text">Klik salah satu titik pada diagram untuk melihat detail proses dan risikonya.</span></div>
     </div>
   </div>
 
