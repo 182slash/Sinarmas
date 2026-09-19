@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mill Integrity Platform — Paparan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14171A; --bg-panel:#1B1F24; --bg-panel-raised:#21262C;
+  --line:#33393F; --line-soft:#262B30;
+  --ink:#E9E6DD; --ink-dim:#9CA3AA; --ink-faint:#6B7278;
+  --amber:#C98A2C; --amber-dim:#8A6224;
+  --steel:#5E86A6; --alert:#B4573F; --good:#6E9B6F;
+  --serif:"Source Serif 4", Georgia, serif;
+  --sans:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--serif); overflow:hidden; -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--amber); color:#14171A;}
+h1,h2,h3,h4{font-family:var(--sans); font-weight:600; margin:0; color:var(--ink);}
+p{color:var(--ink-dim); margin:0;}
+
+/* ---------- deck scaffold ---------- */
+.deck{position:relative; width:100vw; height:100vh;}
+.slide{
+  position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center;
+  padding:70px 90px 100px; opacity:0; pointer-events:none;
+  transform:translateX(40px) scale(.98);
+  transition:opacity .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.slide.active{opacity:1; pointer-events:auto; transform:translateX(0) scale(1); z-index:2;}
+.slide.prev{transform:translateX(-40px) scale(.98); opacity:0;}
+@media(max-width:900px){ .slide{padding:40px 28px 90px;} }
+
+.slide-inner{max-width:1180px; margin:0 auto; width:100%;}
+.kicker{font-family:var(--mono); font-size:13px; color:var(--amber); margin:0 0 18px;}
+.slide h2{font-size:clamp(26px,3.6vw,44px); max-width:16ch; line-height:1.15; margin-bottom:0;}
+.lead{font-size:18px; color:var(--ink); max-width:58ch; margin-top:18px;}
+.small{font-size:14.5px; max-width:60ch;}
+
+/* ---------- background grid ---------- */
+.bg-grid{
+  position:fixed; inset:0; z-index:0; opacity:.28; pointer-events:none;
+  background-image:linear-gradient(var(--line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 70% 60% at 55% 45%, black 5%, transparent 78%);
+}
+
+/* ---------- chrome: progress + controls ---------- */
+.chrome{position:fixed; inset:0; z-index:10; pointer-events:none;}
+.topbar{
+  position:absolute; top:0; left:0; right:0; height:56px; display:flex; align-items:center;
+  justify-content:space-between; padding:0 32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint);
+}
+.brand{display:flex; align-items:center; gap:9px;}
+.brand .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
+.progress-track{position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--line-soft);}
+.progress-fill{height:100%; background:var(--amber); transition:width .4s ease; width:0%;}
+.slide-counter{position:absolute; bottom:24px; right:32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint); pointer-events:auto;}
+.slide-counter b{color:var(--ink);}
+.arrows{position:absolute; bottom:20px; left:32px; display:flex; gap:10px; pointer-events:auto;}
+.arrow-btn{
+  width:36px; height:36px; border:1px solid var(--line); background:var(--bg-panel); color:var(--ink-dim);
+  font-family:var(--mono); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:border-color .2s, color .2s;
+}
+.arrow-btn:hover{border-color:var(--amber); color:var(--ink);}
+.arrow-btn:disabled{opacity:.3; cursor:default;}
+.dots{position:absolute; bottom:24px; left:50%; transform:translateX(-50%); display:flex; gap:7px; pointer-events:auto;}
+.dot-btn{width:6px; height:6px; border-radius:50%; background:var(--line); border:none; cursor:pointer; padding:0; transition:background .2s, transform .2s;}
+.dot-btn.active{background:var(--amber); transform:scale(1.6);}
+@media(max-width:760px){ .dots{display:none;} }
+.hint{position:absolute; top:56px; right:32px; font-family:var(--mono); font-size:11px; color:var(--ink-faint); opacity:.8; pointer-events:none;}
+
+/* ---------- SLIDE 1: title ---------- */
+.title-slide h1{
+  font-family:var(--sans); font-weight:600; font-size:clamp(38px,6vw,68px); line-height:1.05; max-width:15ch;
+}
+.title-meta{margin-top:52px; display:grid; grid-template-columns:repeat(3,auto); gap:44px;}
+.title-meta div{font-family:var(--mono); font-size:12px; color:var(--ink-faint);}
+.title-meta strong{display:block; font-family:var(--sans); font-size:15px; color:var(--ink); font-weight:600; margin-bottom:4px;}
+
+/* ---------- flow diagram slide ---------- */
+.flow{display:flex; gap:0; margin-top:44px; flex-wrap:nowrap; overflow-x:auto; padding-bottom:6px;}
+.flow-node{
+  flex:1; min-width:118px; background:var(--bg-panel); border:1px solid var(--line); padding:16px 14px; cursor:pointer;
+  transition:border-color .25s, background .25s, transform .25s;
+}
+.flow-node:hover{transform:translateY(-3px);}
+.flow-node.active{border-color:var(--amber); background:var(--bg-panel-raised); transform:translateY(-4px); box-shadow:0 10px 24px rgba(0,0,0,.35);}
+.flow-node.risk{border-style:dashed; border-color:var(--alert);}
+.flow-node .n{font-family:var(--mono); font-size:10.5px; color:var(--amber); display:block; margin-bottom:8px;}
+.flow-node.risk .n{color:var(--alert);}
+.flow-node .t{font-family:var(--sans); font-size:13px; font-weight:600;}
+.flow-arrow{flex:0 0 22px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); font-family:var(--mono);}
+.flow-detail{
+  margin-top:26px; padding:22px 26px; background:var(--bg-panel); border-left:2px solid var(--amber);
+  font-family:var(--sans); font-size:14.5px; color:var(--ink-dim); min-height:60px; opacity:1; transition:opacity .25s;
+}
+
+/* ---------- problem node-map slide ---------- */
+.problem-map{display:grid; grid-template-columns:1.05fr 1fr; gap:56px; margin-top:40px; align-items:start; position:relative;}
+@media(max-width:900px){.problem-map{grid-template-columns:1fr;}}
+.pnode{cursor:pointer;}
+.pnode circle{transition:r .25s, fill .25s;}
+.pnode.active circle:not(.pulse):not(.glow-arc){r:11;}
+.pnode text{font-family:var(--mono); font-size:11px; fill:var(--ink-dim); pointer-events:none; transition:fill .25s;}
+.pnode.active text{fill:var(--ink);}
+
+/* connecting lines: default static, "lit" ones animate like a data-connection beam */
+.pline{stroke:var(--line); stroke-width:1; fill:none;}
+.pline.lit{
+  stroke:var(--amber); stroke-width:1.4;
+  stroke-dasharray:5 7;
+  animation:dashFlow 1s linear infinite;
+}
+@keyframes dashFlow{ to{ stroke-dashoffset:-24; } }
+
+/* rotating glow ring around the active node — a looping "scanning" arc */
+.glow-ring{ opacity:0; transform-origin:0 0; }
+.pnode.active .glow-ring{ opacity:1; animation:glowSpin 2.6s linear infinite; }
+.glow-arc{
+  fill:none; stroke:var(--amber); stroke-width:2; stroke-linecap:round;
+  stroke-dasharray:14 58; filter:drop-shadow(0 0 4px rgba(201,138,44,.85));
+}
+@keyframes glowSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
+
+/* soft pulse ring underneath, still used for a secondary breathing glow */
+@keyframes nodePulse{0%{opacity:.5; r:12;} 100%{opacity:0; r:20;}}
+.pnode.active .pulse{animation:nodePulse 1.8s ease-out infinite;}
+
+/* leader line pointing from the active node toward the description panel */
+.leader-line{
+  position:absolute; height:2px; left:0; top:0; width:0; z-index:1; pointer-events:none;
+  opacity:0; transition:opacity .2s;
+  background:repeating-linear-gradient(90deg, var(--amber) 0 8px, transparent 8px 16px);
+  background-size:200% 100%;
+  animation:leaderFlow .7s linear infinite;
+  filter:drop-shadow(0 0 3px rgba(201,138,44,.7));
+}
+.leader-line.on{opacity:1;}
+.leader-line:after{
+  content:""; position:absolute; right:-1px; top:50%; transform:translateY(-50%);
+  width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-left:7px solid var(--amber);
+}
+@keyframes leaderFlow{ from{ background-position:0 0; } to{ background-position:-32px 0; } }
+
+.problem-detail{background:var(--bg-panel); border:1px solid var(--line); padding:28px; min-height:250px; transition:opacity .2s, border-color .3s; position:relative;}
+.problem-detail.pulse-in{border-color:var(--amber);}
+.problem-detail .tag{font-family:var(--mono); font-size:11.5px; color:var(--amber); margin-bottom:12px;}
+.problem-detail h3{font-size:20px; margin-bottom:12px;}
+.problem-detail p{max-width:none; font-size:14.5px;}
+.problem-detail .stat{font-family:var(--sans); font-size:28px; color:var(--amber); font-weight:600; margin:16px 0 4px;}
+.problem-detail .stat-label{font-family:var(--mono); font-size:11px; color:var(--ink-faint);}
+
+/* ---------- rumusan slide ---------- */
+.rumusan-list{margin-top:40px; display:flex; flex-direction:column; gap:0;}
+.rumusan-item{display:grid; grid-template-columns:60px 1fr; gap:24px; padding:20px 0; border-top:1px solid var(--line-soft); cursor:pointer;}
+.rumusan-item:last-child{border-bottom:1px solid var(--line-soft);}
+.rumusan-item .q{font-family:var(--mono); font-size:12.5px; color:var(--ink-faint); padding-top:3px; transition:color .2s;}
+.rumusan-item h3{font-family:var(--serif); font-weight:500; font-size:18px; color:var(--ink); margin-bottom:6px; line-height:1.4;}
+.rumusan-item p{font-size:14px; max-height:0; overflow:hidden; opacity:0; transition:max-height .35s ease, opacity .35s ease;}
+.rumusan-item.open p{max-height:120px; opacity:1; margin-top:6px;}
+.rumusan-item.open .q{color:var(--amber);}
+
+/* ---------- modules slide ---------- */
+.modules{margin-top:36px; display:flex; flex-direction:column; gap:1px; background:var(--line-soft); max-height:56vh; overflow-y:auto;}
+.module{background:var(--bg);}
+.module-head{display:grid; grid-template-columns:70px 1fr 22px; align-items:center; gap:20px; padding:20px 4px; cursor:pointer;}
+.module-head .mnum{font-family:var(--mono); font-size:12px; color:var(--amber);}
+.module-head h3{font-family:var(--sans); font-size:17px; font-weight:600;}
+.module-head .chev{font-family:var(--mono); color:var(--ink-faint); transition:transform .25s;}
+.module.open .chev{transform:rotate(45deg);}
+.module-body{max-height:0; overflow:hidden; transition:max-height .35s ease;}
+.module.open .module-body{max-height:400px;}
+.module-body-inner{padding:0 4px 22px 90px; display:grid; grid-template-columns:1fr 1fr; gap:28px;}
+@media(max-width:900px){.module-body-inner{grid-template-columns:1fr; padding-left:4px;}}
+.module-body-inner h4{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin:0 0 10px;}
+.module-body-inner ul{margin:0; padding:0; list-style:none;}
+.module-body-inner li{font-size:13.5px; color:var(--ink-dim); padding:7px 0 7px 16px; position:relative; border-top:1px solid var(--line-soft);}
+.module-body-inner li:first-child{border-top:none;}
+.module-body-inner li:before{content:"—"; position:absolute; left:0; color:var(--ink-faint);}
+
+/* ---------- roadmap slide ---------- */
+.rsteps{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:50px; position:relative;}
+.rline{position:absolute; top:11px; left:0; right:0; height:1px; background:var(--line);}
+.rstep{padding-top:32px; position:relative; cursor:pointer;}
+.rstep .dot{position:absolute; top:5px; left:0; width:13px; height:13px; border-radius:50%; background:var(--bg); border:2px solid var(--amber-dim); transition:all .3s;}
+.rstep.active .dot{border-color:var(--amber); background:var(--amber); box-shadow:0 0 0 5px rgba(201,138,44,.18);}
+.rstep .phase{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-bottom:6px;}
+.rstep h4{font-size:15.5px; margin-bottom:8px;}
+.rstep p{font-size:13.5px;}
+@media(max-width:900px){.rsteps{grid-template-columns:1fr;} .rline{display:none;}}
+
+/* ---------- risk grid slide ---------- */
+.risk-grid{margin-top:40px; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-soft);}
+.risk-card{background:var(--bg); padding:22px; cursor:default; transition:background .2s;}
+.risk-card:hover{background:var(--bg-panel);}
+.risk-card .tag{font-family:var(--mono); font-size:11px; color:var(--alert); margin-bottom:10px;}
+.risk-card p{font-size:13.5px;}
+@media(max-width:900px){.risk-grid{grid-template-columns:1fr;}}
+
+/* ---------- closing slide ---------- */
+.closing h2{max-width:20ch;}
+.closing .foot-meta{margin-top:60px; font-family:var(--mono); font-size:12px; color:var(--ink-faint); display:flex; gap:28px; flex-wrap:wrap;}
+
+@media(prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1 -->
+  <div class="slide title-slide active" data-slide="0">
+    <div class="slide-inner">
+      <div class="kicker">STUDI KASUS — PABRIK KELAPA SAWIT</div>
+      <h1>Data produksi yang bisa ditambal adalah risiko, bukan sekadar celah operasional.</h1>
+      <p class="lead">Usulan sistem pencatatan produksi mill yang real-time, tidak bisa diubah diam-diam, dan bisa diaudit.</p>
+      <div class="title-meta">
+        <div><strong>1 site</strong>diobservasi</div>
+        <div><strong>1–2 hari</strong>keterlambatan laporan</div>
+        <div><strong>22–25%</strong>kuota rendemen harian</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: latar belakang intro -->
+  <div class="slide" data-slide="1">
+    <div class="slide-inner">
+      <div class="kicker">01 — LATAR BELAKANG MASALAH</div>
+      <h2>Satu jalur produksi, dua metode ukur, dan laporan yang datang terlambat.</h2>
+      <p class="lead">Alur produksi crude oil di site berjalan lewat delapan titik pencatatan manual. Setiap titik berpotensi menjadi tempat data melenceng dari kondisi sebenarnya — dan sejauh ini tidak ada satu pun yang tercatat otomatis.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: flow diagram -->
+  <div class="slide" data-slide="2">
+    <div class="slide-inner">
+      <div class="kicker">01 — MEKANISME SITE</div>
+      <h2 style="font-size:26px;">Delapan titik proses, tiga di antaranya rawan.</h2>
+      <div class="flow" id="flowDiagram">
+        <div class="flow-node" data-detail="Truk pemasok — kebun sendiri maupun kebun masyarakat — masuk ke area site membawa raw material (TBS)."><span class="n">01</span><span class="t">Truk masuk</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" data-detail="Truk beserta muatan ditimbang di jembatan timbang — angka bruto pertama, sepenuhnya bergantung pada input manual operator."><span class="n">02</span><span class="t">Timbang bruto</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" data-detail="Raw material dibongkar dari truk ke area pengolahan."><span class="n">03</span><span class="t">Bongkar muatan</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node risk" data-detail="Titik rawan #1 — Truk kosong ditimbang ulang untuk berat net. Selisih bruto–tara inilah dasar kuota harian, dan hanya tercatat di kertas."><span class="n">04·rawan</span><span class="t">Timbang tara→net</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" data-detail="Raw material diproses di penggilingan menjadi crude oil. Ekspektasi hasil 22–25% dari berat raw material."><span class="n">05</span><span class="t">Diolah</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node risk" data-detail="Titik rawan #2 — Crude oil dimuat ke kapal tongkang, tinggi minyak diukur manual. Metode ukur pertama dari dua metode berbeda."><span class="n">06·rawan</span><span class="t">Muat tongkang</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node risk" data-detail="Titik rawan #3 — Saat bongkar, crude oil diukur ulang lewat selang, metode berbeda dari saat muat — selisih/susut sulit dilacak."><span class="n">07·rawan</span><span class="t">Bongkar & ukur</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node" data-detail="Checksheet hasil pengolahan baru dilaporkan 1–2 hari setelah crude oil selesai diolah."><span class="n">08</span><span class="t">Checksheet lapor</span></div>
+      </div>
+      <div class="flow-detail" id="flowDetail">Klik salah satu titik untuk melihat detail proses dan risikonya.</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: identifikasi masalah node map -->
+  <div class="slide" data-slide="3">
+    <div class="slide-inner">
+      <div class="kicker">02 — IDENTIFIKASI MASALAH</div>
+      <h2 style="font-size:26px;">Empat celah yang saling terhubung.</h2>
+      <div class="problem-map">
+        <svg viewBox="0 0 480 400" width="100%" id="pmapSvg">
+          <path class="pline" id="ln1" d="M120,80 L300,55"></path>
+          <path class="pline" id="ln2" d="M120,80 L300,170"></path>
+          <path class="pline" id="ln3" d="M120,80 L120,250"></path>
+          <path class="pline" id="ln4" d="M120,250 L300,290"></path>
+          <path class="pline" id="ln5" d="M300,55 L300,170"></path>
+
+          <g class="pnode active" data-id="p1" transform="translate(120,80)">
+            <circle class="pulse" r="16" fill="none" stroke="#C98A2C" stroke-width="1"></circle>
+            <g class="glow-ring"><circle class="glow-arc" r="15" cx="0" cy="0"></circle></g>
+            <circle r="9" fill="#C98A2C"></circle>
+            <text x="16" y="-8">01</text><text x="16" y="8">Kuota rendemen kaku</text>
+          </g>
+          <g class="pnode" data-id="p2" transform="translate(300,55)">
+            <circle class="pulse" r="16" fill="none" stroke="#C98A2C" stroke-width="1" style="opacity:0"></circle>
+            <g class="glow-ring"><circle class="glow-arc" r="15" cx="0" cy="0"></circle></g>
+            <circle r="9" fill="#33393F"></circle>
+            <text x="16" y="-8">02</text><text x="16" y="8">Angka bisa "ditambal"</text>
+          </g>
+          <g class="pnode" data-id="p3" transform="translate(300,170)">
+            <circle class="pulse" r="16" fill="none" stroke="#C98A2C" stroke-width="1" style="opacity:0"></circle>
+            <g class="glow-ring"><circle class="glow-arc" r="15" cx="0" cy="0"></circle></g>
+            <circle r="9" fill="#33393F"></circle>
+            <text x="16" y="-8">03</text><text x="16" y="8">Laporan telat 1–2 hari</text>
+          </g>
+          <g class="pnode" data-id="p4" transform="translate(120,250)">
+            <circle class="pulse" r="16" fill="none" stroke="#C98A2C" stroke-width="1" style="opacity:0"></circle>
+            <g class="glow-ring"><circle class="glow-arc" r="15" cx="0" cy="0"></circle></g>
+            <circle r="9" fill="#33393F"></circle>
+            <text x="16" y="-8">04</text><text x="16" y="8">Dua metode ukur berbeda</text>
+          </g>
+          <g class="pnode" data-id="p5" transform="translate(300,290)">
+            <circle class="pulse" r="16" fill="none" stroke="#C98A2C" stroke-width="1" style="opacity:0"></circle>
+            <g class="glow-ring"><circle class="glow-arc" r="15" cx="0" cy="0"></circle></g>
+            <circle r="9" fill="#33393F"></circle>
+            <text x="16" y="-8">05</text><text x="16" y="8">Antrean & shift 2 tak terbatas</text>
+          </g>
+        </svg>
+        <div class="leader-line" id="leaderLine"></div>
+        <div class="problem-detail" id="problemDetail">
+          <div class="tag">SIMPUL 01</div>
+          <h3>Kuota rendemen menekan personel site</h3>
+          <p>Kuota 22–25% CPO dari raw material diberlakukan sebagai target harian yang kaku. Saat hasil aktual di bawah itu, tekanan bergeser ke personel site untuk "menyesuaikan" angka.</p>
+          <div class="stat">1% = 10 ton</div>
+          <div class="stat-label">SELISIH 1% RENDEMEN DARI 1.000 TON RAW MATERIAL/HARI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: rumusan masalah -->
+  <div class="slide" data-slide="4">
+    <div class="slide-inner">
+      <div class="kicker">03 — RUMUSAN MASALAH</div>
+      <h2 style="font-size:26px;">Tiga pertanyaan yang menentukan bentuk solusi.</h2>
+      <div class="rumusan-list" id="rumusanList">
+        <div class="rumusan-item open" data-r="1">
+          <div class="q">RM—01</div>
+          <div>
+            <h3>Bagaimana HQ melihat angka produksi yang sama dengan kondisi di site, tanpa jeda 1–2 hari?</h3>
+            <p>Selama laporan masih checksheet manual yang direkap belakangan, HQ selalu bereaksi terhadap kejadian yang sudah lewat.</p>
+          </div>
+        </div>
+        <div class="rumusan-item" data-r="2">
+          <div class="q">RM—02</div>
+          <div>
+            <h3>Bagaimana mencegah angka hasil timbang dan hasil olah diubah diam-diam, tanpa menghilangkan koreksi yang sah?</h3>
+            <p>Sistem perlu membedakan koreksi sah dari penambalan data yang menutupi kekurangan output.</p>
+          </div>
+        </div>
+        <div class="rumusan-item" data-r="3">
+          <div class="q">RM—03</div>
+          <div>
+            <h3>Bagaimana kuota harian tetap jadi alat kendali mutu, bukan alasan menambal data?</h3>
+            <p>Selama target dibaca sebagai pass/fail harian, penyimpangan wajar tidak punya tempat untuk dilaporkan jujur.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: solusi modules -->
+  <div class="slide" data-slide="5">
+    <div class="slide-inner">
+      <div class="kicker">04 — SOLUSI YANG DITAWARKAN</div>
+      <h2 style="font-size:26px;">Satu platform, tiga lapis kendali.</h2>
+      <div class="modules" id="modules">
+        <div class="module open">
+          <div class="module-head"><span class="mnum">MOD 01</span><h3>Live Dashboard & Reporting untuk HQ</h3><span class="chev">+</span></div>
+          <div class="module-body"><div class="module-body-inner">
+            <div><h4>CAKUPAN</h4><ul>
+              <li>TBS masuk, ton diolah, CPO dihasilkan per shift/hari</li>
+              <li>OER real-time, level tangki, status muat tongkang</li>
+              <li>Mode offline dengan sinkronisasi saat koneksi pulih</li>
+            </ul></div>
+            <div><h4>MANFAAT</h4><ul>
+              <li>HQ melihat kondisi hari yang sama, bukan 1–2 hari kemudian</li>
+              <li>Laporan otomatis — checksheet manual bukan lagi sumber utama</li>
+            </ul></div>
+          </div></div>
+        </div>
+        <div class="module">
+          <div class="module-head"><span class="mnum">MOD 02</span><h3>Anti-Tambal Angka Timbangan</h3><span class="chev">+</span></div>
+          <div class="module-body"><div class="module-body-inner">
+            <div><h4>CAKUPAN</h4><ul>
+              <li>Berat otomatis dari indikator timbangan dengan cap waktu</li>
+              <li>Log append-only, koreksi jadi entri baru dengan persetujuan</li>
+              <li>Kamera ANPR, RFID/QR per truk</li>
+            </ul></div>
+            <div><h4>MANFAAT</h4><ul>
+              <li>Ledger stok CPO — selisih tercatat terbuka</li>
+              <li>Penambalan angka antar hari tidak lagi mungkin diam-diam</li>
+            </ul></div>
+          </div></div>
+        </div>
+        <div class="module">
+          <div class="module-head"><span class="mnum">MOD 03</span><h3>Mass-Balance & Sensor Tangki-Tongkang</h3><span class="chev">+</span></div>
+          <div class="module-body"><div class="module-body-inner">
+            <div><h4>CAKUPAN</h4><ul>
+              <li>Mass-balance harian TBS vs CPO/kernel/by-product</li>
+              <li>Sensor level tangki & flowmeter muat-bongkar (fase 2)</li>
+            </ul></div>
+            <div><h4>MANFAAT</h4><ul>
+              <li>Hari janggal otomatis ditandai</li>
+              <li>Transit loss terhitung otomatis, bukan estimasi</li>
+            </ul></div>
+          </div></div>
+        </div>
+        <div class="module">
+          <div class="module-head"><span class="mnum">MOD 04</span><h3>Traceability, Booking Slot & Monitoring Shift</h3><span class="chev">+</span></div>
+          <div class="module-body"><div class="module-body-inner">
+            <div><h4>CAKUPAN</h4><ul>
+              <li>Grading TBS digital per truk & sumber (termasuk kebun masyarakat)</li>
+              <li>Booking slot antar 08.00–17.00, monitoring downtime mesin</li>
+            </ul></div>
+            <div><h4>MANFAAT</h4><ul>
+              <li>Dasar kepatuhan EUDR, antrean truk berkurang</li>
+              <li>Lembur shift 2 direncanakan, bukan reaktif</li>
+            </ul></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: roadmap -->
+  <div class="slide" data-slide="6">
+    <div class="slide-inner">
+      <div class="kicker">05 — USULAN TAHAPAN</div>
+      <h2 style="font-size:26px;">Empat fase, dimulai dari pilot 90 hari.</h2>
+      <div class="rsteps" id="rsteps">
+        <div class="rline"></div>
+        <div class="rstep active" data-r="0"><div class="dot"></div><div class="phase">FASE 0</div><h4>Discovery</h4><p>Audit sistem eksisting — ERP, SCADA, software timbangan.</p></div>
+        <div class="rstep" data-r="1"><div class="dot"></div><div class="phase">FASE 1 · 90 HARI</div><h4>Pilot 1 Site</h4><p>Integrasi timbangan, dashboard live, dan alert.</p></div>
+        <div class="rstep" data-r="2"><div class="dot"></div><div class="phase">FASE 2</div><h4>Sensor Tangki & Tongkang</h4><p>Sensor level dan flowmeter menutup celah ukur manual.</p></div>
+        <div class="rstep" data-r="3"><div class="dot"></div><div class="phase">FASE 3</div><h4>Rollout Multi-Site</h4><p>Traceability EUDR penuh dan analitik prediktif.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: risiko -->
+  <div class="slide" data-slide="7">
+    <div class="slide-inner">
+      <div class="kicker">06 — HAL YANG PERLU DIPERHATIKAN</div>
+      <h2 style="font-size:26px;">Empat hal yang menentukan diterima atau ditolaknya pitch ini.</h2>
+      <div class="risk-grid">
+        <div class="risk-card"><div class="tag">FRAMING</div><p>Bingkai sebagai "gap visibilitas data dan risiko audit" — bukan tuduhan ke personel tertentu.</p></div>
+        <div class="risk-card"><div class="tag">VALIDASI</div><p>Temuan dari satu narasumber, satu site. Perlu sumber pembanding sebelum diklaim sistemik.</p></div>
+        <div class="risk-card"><div class="tag">SISTEM EKSISTING</div><p>Grup sebesar ini mungkin sudah punya ERP/SCADA — discovery perlu memastikan tidak tumpang tindih.</p></div>
+        <div class="risk-card"><div class="tag">RESISTENSI INTERNAL</div><p>Personel yang biasa menyesuaikan angka kemungkinan menolak — perlu sponsor level atas.</p></div>
+        <div class="risk-card"><div class="tag">INFRASTRUKTUR</div><p>Sinyal di site sering tidak stabil — arsitektur perlu mode offline dengan sinkronisasi.</p></div>
+        <div class="risk-card"><div class="tag">HOSTING & AUDIT</div><p>Kemungkinan dibutuhkan hosting on-premise/private cloud plus audit keamanan.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: closing -->
+  <div class="slide closing" data-slide="8">
+    <div class="slide-inner">
+      <div class="kicker">PENUTUP</div>
+      <h2>Diusulkan sebagai pilot 90 hari di satu site, sebelum diperluas ke seluruh grup.</h2>
+      <p class="lead">Kuota tetap sama — yang berubah adalah kejujuran datanya.</p>
+      <div class="foot-meta">
+        <span>MILL INTEGRITY PLATFORM</span>
+        <span>MATERI INTERNAL — UNTUK KEPERLUAN PAPARAN</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="chrome">
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span>MILL INTEGRITY PLATFORM</div>
+    <div id="slideLabel">01 · TITLE</div>
+  </div>
+  <div class="hint">← / → atau spasi untuk navigasi</div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="arrows">
+    <button class="arrow-btn" id="prevBtn" aria-label="Sebelumnya">←</button>
+    <button class="arrow-btn" id="nextBtn" aria-label="Berikutnya">→</button>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="slide-counter"><b id="curNum">01</b> / <span id="totalNum">09</span></div>
+</div>
+
+<script>
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let current = 0;
+
+const labels = ['TITLE','LATAR BELAKANG','MEKANISME SITE','IDENTIFIKASI MASALAH','RUMUSAN MASALAH','SOLUSI','ROADMAP','RISIKO','PENUTUP'];
+
+const dotsWrap = document.getElementById('dots');
+slides.forEach((s,i)=>{
+  const b = document.createElement('button');
+  b.className = 'dot-btn' + (i===0 ? ' active' : '');
+  b.addEventListener('click', ()=>goTo(i));
+  dotsWrap.appendChild(b);
+});
+const dotEls = Array.from(dotsWrap.children);
+
+document.getElementById('totalNum').textContent = String(total).padStart(2,'0');
+
+function render(){
+  slides.forEach((s,i)=>{
+    s.classList.remove('active','prev');
+    if(i === current) s.classList.add('active');
+    else if(i < current) s.classList.add('prev');
+  });
+  dotEls.forEach((d,i)=>d.classList.toggle('active', i===current));
+  document.getElementById('progressFill').style.width = ((current)/(total-1))*100 + '%';
+  document.getElementById('curNum').textContent = String(current+1).padStart(2,'0');
+  document.getElementById('slideLabel').textContent = String(current+1).padStart(2,'0') + ' · ' + labels[current];
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total-1;
+}
+function goTo(i){
+  if(i < 0 || i >= total) return;
+  current = i;
+  render();
+  if(labels[current] === 'IDENTIFIKASI MASALAH'){
+    setTimeout(()=>{
+      const activeNode = document.querySelector('.pnode.active');
+      if(activeNode && typeof positionLeaderLine === 'function') positionLeaderLine(activeNode);
+    }, 260);
+  }
+}
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
+
+window.addEventListener('keydown', (e)=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(current+1); }
+  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); goTo(current-1); }
+  if(e.key === 'Home') goTo(0);
+  if(e.key === 'End') goTo(total-1);
+});
+// swipe support
+let touchX = null;
+document.addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; });
+document.addEventListener('touchend', e=>{
+  if(touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if(dx < -50) goTo(current+1);
+  if(dx > 50) goTo(current-1);
+  touchX = null;
+});
+
+render();
+
+/* ---- interactive node/panel logic (independent of slide nav) ---- */
+
+// Flow diagram
+const flowNodes = document.querySelectorAll('.flow-node');
+const flowDetail = document.getElementById('flowDetail');
+flowNodes.forEach(node=>{
+  node.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    flowNodes.forEach(n=>n.classList.remove('active'));
+    node.classList.add('active');
+    flowDetail.style.opacity = 0;
+    setTimeout(()=>{ flowDetail.textContent = node.dataset.detail; flowDetail.style.opacity = 1; }, 120);
+  });
+});
+
+// Problem node map with connecting-line light-up animation
+const problemData = {
+  p1: {tag:'SIMPUL 01', title:'Kuota rendemen menekan personel site',
+    text:'Kuota 22–25% CPO dari raw material diberlakukan sebagai target harian yang kaku. Saat hasil aktual di bawah itu, tekanan bergeser ke personel site untuk "menyesuaikan" angka.',
+    stat:'1% = 10 ton', statLabel:'SELISIH 1% RENDEMEN DARI 1.000 TON RAW MATERIAL/HARI', lines:[]},
+  p2: {tag:'SIMPUL 02', title:'Angka bisa "ditambal" antar hari',
+    text:'Kekurangan output pada satu hari ditutup memakai surplus dari hasil olah hari sebelumnya. Manajemen tidak pernah melihat rendemen (OER) yang sesungguhnya.',
+    stat:'0 kali', statLabel:'KOREKSI REAL-TIME YANG TERCATAT SAAT INI', lines:['ln1']},
+  p3: {tag:'SIMPUL 03', title:'Laporan datang 1–2 hari setelah produksi',
+    text:'Checksheet baru masuk 1–2 hari setelah crude oil selesai diolah. Tidak ada koreksi real-time ketika rendemen turun.',
+    stat:'1–2 hari', statLabel:'JEDA ANTARA PRODUKSI DAN LAPORAN SAMPAI KE HQ', lines:['ln2','ln5']},
+  p4: {tag:'SIMPUL 04', title:'Dua metode ukur untuk satu muatan',
+    text:'Tinggi minyak diukur manual di tongkang saat muat, lalu diukur ulang lewat selang saat bongkar — metode berbeda membuat selisih sulit dilacak.',
+    stat:'2 metode', statLabel:'CARA UKUR YANG BERBEDA UNTUK MUATAN YANG SAMA', lines:['ln3']},
+  p5: {tag:'SIMPUL 05', title:'Antrean dan shift 2 belum terukur',
+    text:'Raw material eksternal dibatasi 08.00–17.00, tapi shift 2 berjalan tanpa batas waktu sampai semua raw material selesai diolah. Data waktu tunggu & lembur belum tersedia.',
+    stat:'Belum ada data', statLabel:'WAKTU TUNGGU TRUK & DURASI LEMBUR SHIFT 2', lines:['ln4']}
+};
+const pnodes = document.querySelectorAll('.pnode');
+const problemDetail = document.getElementById('problemDetail');
+const problemMap = document.querySelector('.problem-map');
+const pmapSvg = document.getElementById('pmapSvg');
+const leaderLine = document.getElementById('leaderLine');
+const plines = document.querySelectorAll('.pline');
+
+function positionLeaderLine(activeNode){
+  // node position within the SVG's own coordinate system -> convert to on-screen px
+  const svgRect = pmapSvg.getBoundingClientRect();
+  const mapRect = problemMap.getBoundingClientRect();
+  const panelRect = problemDetail.getBoundingClientRect();
+  const vb = pmapSvg.viewBox.baseVal;
+  const scaleX = svgRect.width / vb.width;
+  const scaleY = svgRect.height / vb.height;
+  const m = activeNode.transform.baseVal.consolidate().matrix;
+  const nodeX = svgRect.left - mapRect.left + m.e * scaleX;
+  const nodeY = svgRect.top - mapRect.top + m.f * scaleY;
+
+  const startX = nodeX + 20; // clear the node's label text
+  const endX = panelRect.left - mapRect.left;
+  const width = Math.max(endX - startX, 0);
+
+  leaderLine.style.left = startX + 'px';
+  leaderLine.style.top = nodeY + 'px';
+  leaderLine.style.width = width + 'px';
+  leaderLine.classList.add('on');
+}
+
+pnodes.forEach(node=>{
+  node.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    pnodes.forEach(n=>{
+      n.classList.remove('active');
+      n.querySelector('circle:not(.pulse):not(.glow-arc)').setAttribute('fill', '#33393F');
+      n.querySelector('.pulse').style.opacity = 0;
+    });
+    node.classList.add('active');
+    node.querySelector('circle:not(.pulse):not(.glow-arc)').setAttribute('fill', '#C98A2C');
+    node.querySelector('.pulse').style.opacity = 1;
+    plines.forEach(l=>l.classList.remove('lit'));
+    const d = problemData[node.dataset.id];
+    d.lines.forEach(id=>document.getElementById(id).classList.add('lit'));
+    problemDetail.style.opacity = 0;
+    problemDetail.classList.remove('pulse-in');
+    setTimeout(()=>{
+      problemDetail.innerHTML = `<div class="tag">${d.tag}</div><h3>${d.title}</h3><p>${d.text}</p><div class="stat">${d.stat}</div><div class="stat-label">${d.statLabel}</div>`;
+      problemDetail.style.opacity = 1;
+      problemDetail.classList.add('pulse-in');
+      positionLeaderLine(node);
+    }, 120);
+  });
+});
+window.addEventListener('resize', ()=>{
+  const activeNode = document.querySelector('.pnode.active');
+  if(activeNode) positionLeaderLine(activeNode);
+});
+// initial position for the default-active node once layout has settled
+window.addEventListener('load', ()=>{
+  const activeNode = document.querySelector('.pnode.active');
+  if(activeNode) positionLeaderLine(activeNode);
+});
+
+// Rumusan accordion
+document.querySelectorAll('.rumusan-item').forEach(item=>{
+  item.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.rumusan-item').forEach(i=>i.classList.remove('open'));
+    if(!wasOpen) item.classList.add('open');
+  });
+});
+
+// Module accordion
+document.querySelectorAll('.module-head').forEach(head=>{
+  head.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    const mod = head.parentElement;
+    const wasOpen = mod.classList.contains('open');
+    document.querySelectorAll('.module').forEach(m=>m.classList.remove('open'));
+    if(!wasOpen) mod.classList.add('open');
+  });
+});
+
+// Roadmap step click
+document.querySelectorAll('.rstep').forEach(step=>{
+  step.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    document.querySelectorAll('.rstep').forEach(s=>s.classList.remove('active'));
+    step.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
