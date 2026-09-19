@@ -7,213 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#14171A; --bg-panel:#1B1F24; --bg-panel-raised:#21262C;
-  --line:#33393F; --line-soft:#262B30;
-  --ink:#E9E6DD; --ink-dim:#9CA3AA; --ink-faint:#6B7278;
-  --amber:#C98A2C; --amber-dim:#8A6224;
-  --steel:#5E86A6; --alert:#B4573F; --good:#6E9B6F;
-  --serif:"Source Serif 4", Georgia, serif;
-  --sans:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
-  --mono:"IBM Plex Mono",monospace;
-}
-*{box-sizing:border-box;}
-html,body{height:100%;}
-body{
-  margin:0; background:var(--bg); color:var(--ink);
-  font-family:var(--serif); overflow:hidden; -webkit-font-smoothing:antialiased;
-}
-::selection{background:var(--amber); color:#14171A;}
-h1,h2,h3,h4{font-family:var(--sans); font-weight:600; margin:0; color:var(--ink);}
-p{color:var(--ink-dim); margin:0;}
-
-/* ---------- deck scaffold ---------- */
-.deck{position:relative; width:100vw; height:100vh;}
-.slide{
-  position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center;
-  padding:70px 90px 100px; opacity:0; pointer-events:none;
-  transform:translateX(40px) scale(.98);
-  transition:opacity .5s cubic-bezier(.22,.61,.36,1), transform .5s cubic-bezier(.22,.61,.36,1);
-}
-.slide.active{opacity:1; pointer-events:auto; transform:translateX(0) scale(1); z-index:2;}
-.slide.prev{transform:translateX(-40px) scale(.98); opacity:0;}
-@media(max-width:900px){ .slide{padding:40px 28px 90px;} }
-
-.slide-inner{max-width:1180px; margin:0 auto; width:100%;}
-.kicker{font-family:var(--mono); font-size:13px; color:var(--amber); margin:0 0 18px;}
-.slide h2{font-size:clamp(26px,3.6vw,44px); max-width:16ch; line-height:1.15; margin-bottom:0;}
-.lead{font-size:18px; color:var(--ink); max-width:58ch; margin-top:18px;}
-.small{font-size:14.5px; max-width:60ch;}
-
-/* ---------- background grid ---------- */
-.bg-grid{
-  position:fixed; inset:0; z-index:0; opacity:.28; pointer-events:none;
-  background-image:linear-gradient(var(--line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-  background-size:64px 64px;
-  mask-image:radial-gradient(ellipse 70% 60% at 55% 45%, black 5%, transparent 78%);
-}
-
-/* ---------- chrome: progress + controls ---------- */
-.chrome{position:fixed; inset:0; z-index:10; pointer-events:none;}
-.topbar{
-  position:absolute; top:0; left:0; right:0; height:56px; display:flex; align-items:center;
-  justify-content:space-between; padding:0 32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint);
-}
-.brand{display:flex; align-items:center; gap:9px;}
-.brand .dot{width:6px; height:6px; border-radius:50%; background:var(--amber);}
-.progress-track{position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--line-soft);}
-.progress-fill{height:100%; background:var(--amber); transition:width .4s ease; width:0%;}
-.slide-counter{position:absolute; bottom:24px; right:32px; font-family:var(--mono); font-size:12px; color:var(--ink-faint); pointer-events:auto;}
-.slide-counter b{color:var(--ink);}
-.arrows{position:absolute; bottom:20px; left:32px; display:flex; gap:10px; pointer-events:auto;}
-.arrow-btn{
-  width:36px; height:36px; border:1px solid var(--line); background:var(--bg-panel); color:var(--ink-dim);
-  font-family:var(--mono); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:border-color .2s, color .2s;
-}
-.arrow-btn:hover{border-color:var(--amber); color:var(--ink);}
-.arrow-btn:disabled{opacity:.3; cursor:default;}
-.dots{position:absolute; bottom:24px; left:50%; transform:translateX(-50%); display:flex; gap:7px; pointer-events:auto;}
-.dot-btn{width:6px; height:6px; border-radius:50%; background:var(--line); border:none; cursor:pointer; padding:0; transition:background .2s, transform .2s;}
-.dot-btn.active{background:var(--amber); transform:scale(1.6);}
-@media(max-width:760px){ .dots{display:none;} }
-.hint{position:absolute; top:56px; right:32px; font-family:var(--mono); font-size:11px; color:var(--ink-faint); opacity:.8; pointer-events:none;}
-
-/* ---------- SLIDE 1: title ---------- */
-.title-slide h1{
-  font-family:var(--sans); font-weight:600; font-size:clamp(38px,6vw,68px); line-height:1.05; max-width:15ch;
-}
-.title-meta{margin-top:52px; display:grid; grid-template-columns:repeat(3,auto); gap:44px;}
-.title-meta div{font-family:var(--mono); font-size:12px; color:var(--ink-faint);}
-.title-meta strong{display:block; font-family:var(--sans); font-size:15px; color:var(--ink); font-weight:600; margin-bottom:4px;}
-
-/* ---------- flow diagram slide ---------- */
-.flow{display:flex; gap:0; margin-top:44px; flex-wrap:nowrap; overflow-x:auto; padding-bottom:6px;}
-.flow-node{
-  flex:1; min-width:118px; background:var(--bg-panel); border:1px solid var(--line); padding:16px 14px; cursor:pointer;
-  transition:border-color .25s, background .25s, transform .25s;
-}
-.flow-node:hover{transform:translateY(-3px);}
-.flow-node.active{border-color:var(--amber); background:var(--bg-panel-raised); transform:translateY(-4px); box-shadow:0 10px 24px rgba(0,0,0,.35);}
-.flow-node.risk{border-style:dashed; border-color:var(--alert);}
-.flow-node .n{font-family:var(--mono); font-size:10.5px; color:var(--amber); display:block; margin-bottom:8px;}
-.flow-node.risk .n{color:var(--alert);}
-.flow-node .t{font-family:var(--sans); font-size:13px; font-weight:600;}
-.flow-arrow{flex:0 0 22px; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); font-family:var(--mono);}
-.flow-detail{
-  margin-top:26px; padding:22px 26px; background:var(--bg-panel); border-left:2px solid var(--amber);
-  font-family:var(--sans); font-size:14.5px; color:var(--ink-dim); min-height:60px; opacity:1; transition:opacity .25s;
-}
-
-/* ---------- problem node-map slide ---------- */
-.problem-map{display:grid; grid-template-columns:1.05fr 1fr; gap:56px; margin-top:40px; align-items:start; position:relative;}
-@media(max-width:900px){.problem-map{grid-template-columns:1fr;}}
-.pnode{cursor:pointer;}
-.pnode circle{transition:r .25s, fill .25s;}
-.pnode.active circle:not(.pulse):not(.glow-arc){r:11;}
-.pnode text{font-family:var(--mono); font-size:11px; fill:var(--ink-dim); pointer-events:none; transition:fill .25s;}
-.pnode.active text{fill:var(--ink);}
-
-/* connecting lines: default static, "lit" ones animate like a data-connection beam */
-.pline{stroke:var(--line); stroke-width:1; fill:none;}
-.pline.lit{
-  stroke:var(--amber); stroke-width:1.4;
-  stroke-dasharray:5 7;
-  animation:dashFlow 1s linear infinite;
-}
-@keyframes dashFlow{ to{ stroke-dashoffset:-24; } }
-
-/* rotating glow ring around the active node — a looping "scanning" arc */
-.glow-ring{ opacity:0; transform-origin:0 0; }
-.pnode.active .glow-ring{ opacity:1; animation:glowSpin 2.6s linear infinite; }
-.glow-arc{
-  fill:none; stroke:var(--amber); stroke-width:2; stroke-linecap:round;
-  stroke-dasharray:14 58; filter:drop-shadow(0 0 4px rgba(201,138,44,.85));
-}
-@keyframes glowSpin{ from{ transform:rotate(0deg); } to{ transform:rotate(360deg); } }
-
-/* soft pulse ring underneath, still used for a secondary breathing glow */
-@keyframes nodePulse{0%{opacity:.5; r:12;} 100%{opacity:0; r:20;}}
-.pnode.active .pulse{animation:nodePulse 1.8s ease-out infinite;}
-
-/* leader line pointing from the active node toward the description panel */
-.leader-line{
-  position:absolute; height:2px; left:0; top:0; width:0; z-index:1; pointer-events:none;
-  opacity:0; transition:opacity .2s;
-  background:repeating-linear-gradient(90deg, var(--amber) 0 8px, transparent 8px 16px);
-  background-size:200% 100%;
-  animation:leaderFlow .7s linear infinite;
-  filter:drop-shadow(0 0 3px rgba(201,138,44,.7));
-}
-.leader-line.on{opacity:1;}
-.leader-line:after{
-  content:""; position:absolute; right:-1px; top:50%; transform:translateY(-50%);
-  width:0; height:0; border-top:5px solid transparent; border-bottom:5px solid transparent; border-left:7px solid var(--amber);
-}
-@keyframes leaderFlow{ from{ background-position:0 0; } to{ background-position:-32px 0; } }
-
-.problem-detail{background:var(--bg-panel); border:1px solid var(--line); padding:28px; min-height:250px; transition:opacity .2s, border-color .3s; position:relative;}
-.problem-detail.pulse-in{border-color:var(--amber);}
-.problem-detail .tag{font-family:var(--mono); font-size:11.5px; color:var(--amber); margin-bottom:12px;}
-.problem-detail h3{font-size:20px; margin-bottom:12px;}
-.problem-detail p{max-width:none; font-size:14.5px;}
-.problem-detail .stat{font-family:var(--sans); font-size:28px; color:var(--amber); font-weight:600; margin:16px 0 4px;}
-.problem-detail .stat-label{font-family:var(--mono); font-size:11px; color:var(--ink-faint);}
-
-/* ---------- rumusan slide ---------- */
-.rumusan-list{margin-top:40px; display:flex; flex-direction:column; gap:0;}
-.rumusan-item{display:grid; grid-template-columns:60px 1fr; gap:24px; padding:20px 0; border-top:1px solid var(--line-soft); cursor:pointer;}
-.rumusan-item:last-child{border-bottom:1px solid var(--line-soft);}
-.rumusan-item .q{font-family:var(--mono); font-size:12.5px; color:var(--ink-faint); padding-top:3px; transition:color .2s;}
-.rumusan-item h3{font-family:var(--serif); font-weight:500; font-size:18px; color:var(--ink); margin-bottom:6px; line-height:1.4;}
-.rumusan-item p{font-size:14px; max-height:0; overflow:hidden; opacity:0; transition:max-height .35s ease, opacity .35s ease;}
-.rumusan-item.open p{max-height:120px; opacity:1; margin-top:6px;}
-.rumusan-item.open .q{color:var(--amber);}
-
-/* ---------- modules slide ---------- */
-.modules{margin-top:36px; display:flex; flex-direction:column; gap:1px; background:var(--line-soft); max-height:56vh; overflow-y:auto;}
-.module{background:var(--bg);}
-.module-head{display:grid; grid-template-columns:70px 1fr 22px; align-items:center; gap:20px; padding:20px 4px; cursor:pointer;}
-.module-head .mnum{font-family:var(--mono); font-size:12px; color:var(--amber);}
-.module-head h3{font-family:var(--sans); font-size:17px; font-weight:600;}
-.module-head .chev{font-family:var(--mono); color:var(--ink-faint); transition:transform .25s;}
-.module.open .chev{transform:rotate(45deg);}
-.module-body{max-height:0; overflow:hidden; transition:max-height .35s ease;}
-.module.open .module-body{max-height:400px;}
-.module-body-inner{padding:0 4px 22px 90px; display:grid; grid-template-columns:1fr 1fr; gap:28px;}
-@media(max-width:900px){.module-body-inner{grid-template-columns:1fr; padding-left:4px;}}
-.module-body-inner h4{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin:0 0 10px;}
-.module-body-inner ul{margin:0; padding:0; list-style:none;}
-.module-body-inner li{font-size:13.5px; color:var(--ink-dim); padding:7px 0 7px 16px; position:relative; border-top:1px solid var(--line-soft);}
-.module-body-inner li:first-child{border-top:none;}
-.module-body-inner li:before{content:"—"; position:absolute; left:0; color:var(--ink-faint);}
-
-/* ---------- roadmap slide ---------- */
-.rsteps{display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:50px; position:relative;}
-.rline{position:absolute; top:11px; left:0; right:0; height:1px; background:var(--line);}
-.rstep{padding-top:32px; position:relative; cursor:pointer;}
-.rstep .dot{position:absolute; top:5px; left:0; width:13px; height:13px; border-radius:50%; background:var(--bg); border:2px solid var(--amber-dim); transition:all .3s;}
-.rstep.active .dot{border-color:var(--amber); background:var(--amber); box-shadow:0 0 0 5px rgba(201,138,44,.18);}
-.rstep .phase{font-family:var(--mono); font-size:11px; color:var(--ink-faint); margin-bottom:6px;}
-.rstep h4{font-size:15.5px; margin-bottom:8px;}
-.rstep p{font-size:13.5px;}
-@media(max-width:900px){.rsteps{grid-template-columns:1fr;} .rline{display:none;}}
-
-/* ---------- risk grid slide ---------- */
-.risk-grid{margin-top:40px; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line-soft);}
-.risk-card{background:var(--bg); padding:22px; cursor:default; transition:background .2s;}
-.risk-card:hover{background:var(--bg-panel);}
-.risk-card .tag{font-family:var(--mono); font-size:11px; color:var(--alert); margin-bottom:10px;}
-.risk-card p{font-size:13.5px;}
-@media(max-width:900px){.risk-grid{grid-template-columns:1fr;}}
-
-/* ---------- closing slide ---------- */
-.closing h2{max-width:20ch;}
-.closing .foot-meta{margin-top:60px; font-family:var(--mono); font-size:12px; color:var(--ink-faint); display:flex; gap:28px; flex-wrap:wrap;}
-
-@media(prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -248,24 +42,143 @@ p{color:var(--ink-dim); margin:0;}
     <div class="slide-inner">
       <div class="kicker">01 — MEKANISME SITE</div>
       <h2 style="font-size:26px;">Delapan titik proses, tiga di antaranya rawan.</h2>
-      <div class="flow" id="flowDiagram">
-        <div class="flow-node" data-detail="Truk pemasok — kebun sendiri maupun kebun masyarakat — masuk ke area site membawa raw material (TBS)."><span class="n">01</span><span class="t">Truk masuk</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node" data-detail="Truk beserta muatan ditimbang di jembatan timbang — angka bruto pertama, sepenuhnya bergantung pada input manual operator."><span class="n">02</span><span class="t">Timbang bruto</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node" data-detail="Raw material dibongkar dari truk ke area pengolahan."><span class="n">03</span><span class="t">Bongkar muatan</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node risk" data-detail="Titik rawan #1 — Truk kosong ditimbang ulang untuk berat net. Selisih bruto–tara inilah dasar kuota harian, dan hanya tercatat di kertas."><span class="n">04·rawan</span><span class="t">Timbang tara→net</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node" data-detail="Raw material diproses di penggilingan menjadi crude oil. Ekspektasi hasil 22–25% dari berat raw material."><span class="n">05</span><span class="t">Diolah</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node risk" data-detail="Titik rawan #2 — Crude oil dimuat ke kapal tongkang, tinggi minyak diukur manual. Metode ukur pertama dari dua metode berbeda."><span class="n">06·rawan</span><span class="t">Muat tongkang</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node risk" data-detail="Titik rawan #3 — Saat bongkar, crude oil diukur ulang lewat selang, metode berbeda dari saat muat — selisih/susut sulit dilacak."><span class="n">07·rawan</span><span class="t">Bongkar & ukur</span></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-node" data-detail="Checksheet hasil pengolahan baru dilaporkan 1–2 hari setelah crude oil selesai diolah."><span class="n">08</span><span class="t">Checksheet lapor</span></div>
+      <div class="flow-stage-wrap">
+        <svg class="flow-svg" viewBox="0 0 1200 210" id="flowSvg">
+          <path class="pipe-track" d="M70,18 L1120,18"></path>
+          <path class="pipe-flow" d="M70,18 L1120,18"></path>
+
+          <circle class="particle" r="4" fill="var(--amber)">
+            <animateMotion dur="5.5s" repeatCount="indefinite" begin="0s" path="M70,18 L1120,18"></animateMotion>
+          </circle>
+          <circle class="particle" r="4" fill="var(--amber)" opacity="0.6">
+            <animateMotion dur="5.5s" repeatCount="indefinite" begin="-1.8s" path="M70,18 L1120,18"></animateMotion>
+          </circle>
+          <circle class="particle" r="4" fill="var(--amber)" opacity="0.35">
+            <animateMotion dur="5.5s" repeatCount="indefinite" begin="-3.6s" path="M70,18 L1120,18"></animateMotion>
+          </circle>
+
+          <!-- 01 Truk masuk -->
+          <g class="station" data-detail="Truk pemasok — kebun sendiri maupun kebun masyarakat — masuk ke area site membawa raw material (TBS)." transform="translate(70,0)">
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <path class="icon" d="M-15,6 h19 v-11 h9 l6,6 v5 h3 M-15,6 v-6 h19 v6"></path>
+              <circle class="icon" cx="-9" cy="9" r="2.6"></circle>
+              <circle class="icon" cx="9" cy="9" r="2.6"></circle>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">01</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Truk</text>
+            <text class="label" x="0" y="142" text-anchor="middle">masuk</text>
+            </g>
+          </g>
+
+          <!-- 02 Timbang bruto -->
+          <g class="station" data-detail="Truk beserta muatan ditimbang di jembatan timbang — angka bruto pertama, sepenuhnya bergantung pada input manual operator." transform="translate(220,0)">
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <path class="icon" d="M-14,9 h28 M0,9 v-11 M-11,-2 l11,-6 11,6"></path>
+              <path class="icon" d="M-16,-2 a5,5 0 0 0 10,0"></path>
+              <path class="icon" d="M6,-2 a5,5 0 0 0 10,0"></path>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">02</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Timbang</text>
+            <text class="label" x="0" y="142" text-anchor="middle">bruto</text>
+            </g>
+          </g>
+
+          <!-- 03 Bongkar muatan -->
+          <g class="station" data-detail="Raw material dibongkar dari truk ke area pengolahan." transform="translate(370,0)">
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <rect class="icon" x="-10" y="0" width="20" height="11"></rect>
+              <path class="icon" d="M0,-13 v10 M-5,-7 l5,5 5,-5"></path>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">03</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Bongkar</text>
+            <text class="label" x="0" y="142" text-anchor="middle">muatan</text>
+            </g>
+          </g>
+
+          <!-- 04 Timbang tara -> net (risk) -->
+          <g class="station risk" data-detail="Titik rawan #1 — Truk kosong ditimbang ulang untuk berat net. Selisih bruto–tara inilah dasar kuota harian, dan hanya tercatat di kertas." transform="translate(520,0)">
+            <circle class="risk-ring" cx="0" cy="94" r="66"></circle>
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <path class="icon" d="M-14,9 h28 M0,9 v-11 M-11,-2 l11,-6 11,6"></path>
+              <path class="icon" d="M-16,-2 a5,5 0 0 0 10,0"></path>
+              <path class="icon" d="M6,-2 a5,5 0 0 0 10,0"></path>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">04 · rawan</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Tara → net</text>
+            <text class="label" x="0" y="142" text-anchor="middle">manual</text>
+            </g>
+          </g>
+
+          <!-- 05 Diolah -->
+          <g class="station" data-detail="Raw material diproses di penggilingan menjadi crude oil. Ekspektasi hasil 22–25% dari berat raw material." transform="translate(670,0)">
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <circle class="icon" r="8"></circle>
+              <path class="icon" d="M0,-13 v4 M0,9 v4 M-13,0 h4 M9,0 h4 M-9,-9 l3,3 M6,6 l3,3 M-9,9 l3,-3 M6,-6 l3,-3"></path>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">05</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Diolah di</text>
+            <text class="label" x="0" y="142" text-anchor="middle">penggilingan</text>
+            </g>
+          </g>
+
+          <!-- 06 Checksheet lapor (moved right after milling — report reflects production, not shipping) -->
+          <g class="station" data-detail="Checksheet hasil pengolahan baru dilaporkan 1–2 hari setelah crude oil selesai diolah. Laporan ini soal hasil produksi — jedanya sudah mulai di sini, sebelum muatan sempat dikirim." transform="translate(820,0)">
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <rect class="icon" x="-7" y="-11" width="14" height="21" rx="1"></rect>
+              <path class="icon" d="M-4,-5 h8 M-4,0 h8 M-4,5 h5"></path>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">06</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Checksheet</text>
+            <text class="label" x="0" y="142" text-anchor="middle">dilaporkan</text>
+            </g>
+          </g>
+
+          <!-- 07 Muat tongkang (risk) -->
+          <g class="station risk" data-detail="Titik rawan #2 — Crude oil dimuat ke kapal tongkang, tinggi minyak diukur manual. Metode ukur pertama dari dua metode berbeda." transform="translate(970,0)">
+            <circle class="risk-ring" cx="0" cy="94" r="66"></circle>
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <path class="icon" d="M-14,5 h28 l-4,8 h-20 z"></path>
+              <path class="icon" d="M0,5 v-15 M0,-11 l8,4"></path>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">07 · rawan</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Muat ke</text>
+            <text class="label" x="0" y="142" text-anchor="middle">tongkang</text>
+            </g>
+          </g>
+
+          <!-- 08 Bongkar & ukur (risk) -->
+          <g class="station risk" data-detail="Titik rawan #3 — Saat bongkar, crude oil diukur ulang lewat selang, metode berbeda dari saat muat — selisih/susut sulit dilacak." transform="translate(1120,0)">
+            <circle class="risk-ring" cx="0" cy="94" r="66"></circle>
+            <g class="station-body">
+            <rect class="plate" x="-52" y="30" width="104" height="128" rx="3"></rect>
+            <g transform="translate(0,58)">
+              <circle class="icon" r="9"></circle>
+              <path class="icon" d="M0,0 l5,-6"></path>
+              <path class="icon" d="M-9,0 h2 M9,0 h-2 M0,-9 v2 M0,9 v-2"></path>
+            </g>
+            <text class="num" x="0" y="108" text-anchor="middle">08 · rawan</text>
+            <text class="label" x="0" y="126" text-anchor="middle">Bongkar &amp;</text>
+            <text class="label" x="0" y="142" text-anchor="middle">ukur selang</text>
+            </g>
+          </g>
+        </svg>
+        <div class="flow-caption">alur berkelanjutan dari raw material masuk hingga laporan terbit — titik bergaris putus adalah titik ukur manual yang rawan</div>
       </div>
-      <div class="flow-detail" id="flowDetail">Klik salah satu titik untuk melihat detail proses dan risikonya.</div>
+      <div class="flow-detail" id="flowDetail"><span class="fd-num">PILIH TITIK</span><span class="fd-text">Klik salah satu titik pada diagram untuk melihat detail proses dan risikonya.</span></div>
     </div>
   </div>
 
@@ -313,7 +226,6 @@ p{color:var(--ink-dim); margin:0;}
             <text x="16" y="-8">05</text><text x="16" y="8">Antrean & shift 2 tak terbatas</text>
           </g>
         </svg>
-        <div class="leader-line" id="leaderLine"></div>
         <div class="problem-detail" id="problemDetail">
           <div class="tag">SIMPUL 01</div>
           <h3>Kuota rendemen menekan personel site</h3>
@@ -330,27 +242,35 @@ p{color:var(--ink-dim); margin:0;}
     <div class="slide-inner">
       <div class="kicker">03 — RUMUSAN MASALAH</div>
       <h2 style="font-size:26px;">Tiga pertanyaan yang menentukan bentuk solusi.</h2>
-      <div class="rumusan-list" id="rumusanList">
-        <div class="rumusan-item open" data-r="1">
-          <div class="q">RM—01</div>
-          <div>
-            <h3>Bagaimana HQ melihat angka produksi yang sama dengan kondisi di site, tanpa jeda 1–2 hari?</h3>
-            <p>Selama laporan masih checksheet manual yang direkap belakangan, HQ selalu bereaksi terhadap kejadian yang sudah lewat.</p>
-          </div>
-        </div>
-        <div class="rumusan-item" data-r="2">
-          <div class="q">RM—02</div>
-          <div>
-            <h3>Bagaimana mencegah angka hasil timbang dan hasil olah diubah diam-diam, tanpa menghilangkan koreksi yang sah?</h3>
-            <p>Sistem perlu membedakan koreksi sah dari penambalan data yang menutupi kekurangan output.</p>
-          </div>
-        </div>
-        <div class="rumusan-item" data-r="3">
-          <div class="q">RM—03</div>
-          <div>
-            <h3>Bagaimana kuota harian tetap jadi alat kendali mutu, bukan alasan menambal data?</h3>
-            <p>Selama target dibaca sebagai pass/fail harian, penyimpangan wajar tidak punya tempat untuk dilaporkan jujur.</p>
-          </div>
+      <div class="rumusan-wrap">
+        <svg class="rtri-svg" viewBox="0 0 420 380" id="rtriSvg">
+          <path class="rconn" id="rl12" d="M210,50 L70,320"></path>
+          <path class="rconn" id="rl13" d="M210,50 L350,320"></path>
+          <path class="rconn" id="rl23" d="M70,320 L350,320"></path>
+
+          <g class="rnode active" data-r="1" transform="translate(210,50)">
+            <circle class="rpulse" r="18" fill="none" stroke="#C98A2C" stroke-width="1"></circle>
+            <circle class="core" r="10" fill="#C98A2C"></circle>
+            <text class="rlabel-tag" x="0" y="-22" text-anchor="middle">RM—01</text>
+            <text class="rlabel-title" x="0" y="34" text-anchor="middle">HQ vs jeda laporan</text>
+          </g>
+          <g class="rnode" data-r="2" transform="translate(70,320)">
+            <circle class="rpulse" r="18" fill="none" stroke="#C98A2C" stroke-width="1" style="opacity:0"></circle>
+            <circle class="core" r="10" fill="#33393F"></circle>
+            <text class="rlabel-tag" x="-8" y="30" text-anchor="middle">RM—02</text>
+            <text class="rlabel-title" x="-8" y="48" text-anchor="middle">Cegah tambal angka</text>
+          </g>
+          <g class="rnode" data-r="3" transform="translate(350,320)">
+            <circle class="rpulse" r="18" fill="none" stroke="#C98A2C" stroke-width="1" style="opacity:0"></circle>
+            <circle class="core" r="10" fill="#33393F"></circle>
+            <text class="rlabel-tag" x="8" y="30" text-anchor="middle">RM—03</text>
+            <text class="rlabel-title" x="8" y="48" text-anchor="middle">Kuota tanpa tambal</text>
+          </g>
+        </svg>
+        <div class="rumusan-detail" id="rumusanDetail">
+          <div class="tag">RM—01</div>
+          <h3>Bagaimana HQ melihat angka produksi yang sama dengan kondisi di site, tanpa jeda 1–2 hari?</h3>
+          <p>Selama laporan masih checksheet manual yang direkap belakangan, HQ selalu bereaksi terhadap kejadian yang sudah lewat.</p>
         </div>
       </div>
     </div>
@@ -426,7 +346,7 @@ p{color:var(--ink-dim); margin:0;}
       <div class="kicker">05 — USULAN TAHAPAN</div>
       <h2 style="font-size:26px;">Empat fase, dimulai dari pilot 90 hari.</h2>
       <div class="rsteps" id="rsteps">
-        <div class="rline"></div>
+        <div class="rline"><div class="rline-fill" id="rlineFill"></div></div>
         <div class="rstep active" data-r="0"><div class="dot"></div><div class="phase">FASE 0</div><h4>Discovery</h4><p>Audit sistem eksisting — ERP, SCADA, software timbangan.</p></div>
         <div class="rstep" data-r="1"><div class="dot"></div><div class="phase">FASE 1 · 90 HARI</div><h4>Pilot 1 Site</h4><p>Integrasi timbangan, dashboard live, dan alert.</p></div>
         <div class="rstep" data-r="2"><div class="dot"></div><div class="phase">FASE 2</div><h4>Sensor Tangki & Tongkang</h4><p>Sensor level dan flowmeter menutup celah ukur manual.</p></div>
@@ -481,195 +401,6 @@ p{color:var(--ink-dim); margin:0;}
   <div class="slide-counter"><b id="curNum">01</b> / <span id="totalNum">09</span></div>
 </div>
 
-<script>
-const slides = Array.from(document.querySelectorAll('.slide'));
-const total = slides.length;
-let current = 0;
-
-const labels = ['TITLE','LATAR BELAKANG','MEKANISME SITE','IDENTIFIKASI MASALAH','RUMUSAN MASALAH','SOLUSI','ROADMAP','RISIKO','PENUTUP'];
-
-const dotsWrap = document.getElementById('dots');
-slides.forEach((s,i)=>{
-  const b = document.createElement('button');
-  b.className = 'dot-btn' + (i===0 ? ' active' : '');
-  b.addEventListener('click', ()=>goTo(i));
-  dotsWrap.appendChild(b);
-});
-const dotEls = Array.from(dotsWrap.children);
-
-document.getElementById('totalNum').textContent = String(total).padStart(2,'0');
-
-function render(){
-  slides.forEach((s,i)=>{
-    s.classList.remove('active','prev');
-    if(i === current) s.classList.add('active');
-    else if(i < current) s.classList.add('prev');
-  });
-  dotEls.forEach((d,i)=>d.classList.toggle('active', i===current));
-  document.getElementById('progressFill').style.width = ((current)/(total-1))*100 + '%';
-  document.getElementById('curNum').textContent = String(current+1).padStart(2,'0');
-  document.getElementById('slideLabel').textContent = String(current+1).padStart(2,'0') + ' · ' + labels[current];
-  document.getElementById('prevBtn').disabled = current === 0;
-  document.getElementById('nextBtn').disabled = current === total-1;
-}
-function goTo(i){
-  if(i < 0 || i >= total) return;
-  current = i;
-  render();
-  if(labels[current] === 'IDENTIFIKASI MASALAH'){
-    setTimeout(()=>{
-      const activeNode = document.querySelector('.pnode.active');
-      if(activeNode && typeof positionLeaderLine === 'function') positionLeaderLine(activeNode);
-    }, 260);
-  }
-}
-document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
-document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
-
-window.addEventListener('keydown', (e)=>{
-  if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(current+1); }
-  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); goTo(current-1); }
-  if(e.key === 'Home') goTo(0);
-  if(e.key === 'End') goTo(total-1);
-});
-// swipe support
-let touchX = null;
-document.addEventListener('touchstart', e=>{ touchX = e.touches[0].clientX; });
-document.addEventListener('touchend', e=>{
-  if(touchX === null) return;
-  const dx = e.changedTouches[0].clientX - touchX;
-  if(dx < -50) goTo(current+1);
-  if(dx > 50) goTo(current-1);
-  touchX = null;
-});
-
-render();
-
-/* ---- interactive node/panel logic (independent of slide nav) ---- */
-
-// Flow diagram
-const flowNodes = document.querySelectorAll('.flow-node');
-const flowDetail = document.getElementById('flowDetail');
-flowNodes.forEach(node=>{
-  node.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    flowNodes.forEach(n=>n.classList.remove('active'));
-    node.classList.add('active');
-    flowDetail.style.opacity = 0;
-    setTimeout(()=>{ flowDetail.textContent = node.dataset.detail; flowDetail.style.opacity = 1; }, 120);
-  });
-});
-
-// Problem node map with connecting-line light-up animation
-const problemData = {
-  p1: {tag:'SIMPUL 01', title:'Kuota rendemen menekan personel site',
-    text:'Kuota 22–25% CPO dari raw material diberlakukan sebagai target harian yang kaku. Saat hasil aktual di bawah itu, tekanan bergeser ke personel site untuk "menyesuaikan" angka.',
-    stat:'1% = 10 ton', statLabel:'SELISIH 1% RENDEMEN DARI 1.000 TON RAW MATERIAL/HARI', lines:[]},
-  p2: {tag:'SIMPUL 02', title:'Angka bisa "ditambal" antar hari',
-    text:'Kekurangan output pada satu hari ditutup memakai surplus dari hasil olah hari sebelumnya. Manajemen tidak pernah melihat rendemen (OER) yang sesungguhnya.',
-    stat:'0 kali', statLabel:'KOREKSI REAL-TIME YANG TERCATAT SAAT INI', lines:['ln1']},
-  p3: {tag:'SIMPUL 03', title:'Laporan datang 1–2 hari setelah produksi',
-    text:'Checksheet baru masuk 1–2 hari setelah crude oil selesai diolah. Tidak ada koreksi real-time ketika rendemen turun.',
-    stat:'1–2 hari', statLabel:'JEDA ANTARA PRODUKSI DAN LAPORAN SAMPAI KE HQ', lines:['ln2','ln5']},
-  p4: {tag:'SIMPUL 04', title:'Dua metode ukur untuk satu muatan',
-    text:'Tinggi minyak diukur manual di tongkang saat muat, lalu diukur ulang lewat selang saat bongkar — metode berbeda membuat selisih sulit dilacak.',
-    stat:'2 metode', statLabel:'CARA UKUR YANG BERBEDA UNTUK MUATAN YANG SAMA', lines:['ln3']},
-  p5: {tag:'SIMPUL 05', title:'Antrean dan shift 2 belum terukur',
-    text:'Raw material eksternal dibatasi 08.00–17.00, tapi shift 2 berjalan tanpa batas waktu sampai semua raw material selesai diolah. Data waktu tunggu & lembur belum tersedia.',
-    stat:'Belum ada data', statLabel:'WAKTU TUNGGU TRUK & DURASI LEMBUR SHIFT 2', lines:['ln4']}
-};
-const pnodes = document.querySelectorAll('.pnode');
-const problemDetail = document.getElementById('problemDetail');
-const problemMap = document.querySelector('.problem-map');
-const pmapSvg = document.getElementById('pmapSvg');
-const leaderLine = document.getElementById('leaderLine');
-const plines = document.querySelectorAll('.pline');
-
-function positionLeaderLine(activeNode){
-  // node position within the SVG's own coordinate system -> convert to on-screen px
-  const svgRect = pmapSvg.getBoundingClientRect();
-  const mapRect = problemMap.getBoundingClientRect();
-  const panelRect = problemDetail.getBoundingClientRect();
-  const vb = pmapSvg.viewBox.baseVal;
-  const scaleX = svgRect.width / vb.width;
-  const scaleY = svgRect.height / vb.height;
-  const m = activeNode.transform.baseVal.consolidate().matrix;
-  const nodeX = svgRect.left - mapRect.left + m.e * scaleX;
-  const nodeY = svgRect.top - mapRect.top + m.f * scaleY;
-
-  const startX = nodeX + 20; // clear the node's label text
-  const endX = panelRect.left - mapRect.left;
-  const width = Math.max(endX - startX, 0);
-
-  leaderLine.style.left = startX + 'px';
-  leaderLine.style.top = nodeY + 'px';
-  leaderLine.style.width = width + 'px';
-  leaderLine.classList.add('on');
-}
-
-pnodes.forEach(node=>{
-  node.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    pnodes.forEach(n=>{
-      n.classList.remove('active');
-      n.querySelector('circle:not(.pulse):not(.glow-arc)').setAttribute('fill', '#33393F');
-      n.querySelector('.pulse').style.opacity = 0;
-    });
-    node.classList.add('active');
-    node.querySelector('circle:not(.pulse):not(.glow-arc)').setAttribute('fill', '#C98A2C');
-    node.querySelector('.pulse').style.opacity = 1;
-    plines.forEach(l=>l.classList.remove('lit'));
-    const d = problemData[node.dataset.id];
-    d.lines.forEach(id=>document.getElementById(id).classList.add('lit'));
-    problemDetail.style.opacity = 0;
-    problemDetail.classList.remove('pulse-in');
-    setTimeout(()=>{
-      problemDetail.innerHTML = `<div class="tag">${d.tag}</div><h3>${d.title}</h3><p>${d.text}</p><div class="stat">${d.stat}</div><div class="stat-label">${d.statLabel}</div>`;
-      problemDetail.style.opacity = 1;
-      problemDetail.classList.add('pulse-in');
-      positionLeaderLine(node);
-    }, 120);
-  });
-});
-window.addEventListener('resize', ()=>{
-  const activeNode = document.querySelector('.pnode.active');
-  if(activeNode) positionLeaderLine(activeNode);
-});
-// initial position for the default-active node once layout has settled
-window.addEventListener('load', ()=>{
-  const activeNode = document.querySelector('.pnode.active');
-  if(activeNode) positionLeaderLine(activeNode);
-});
-
-// Rumusan accordion
-document.querySelectorAll('.rumusan-item').forEach(item=>{
-  item.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    const wasOpen = item.classList.contains('open');
-    document.querySelectorAll('.rumusan-item').forEach(i=>i.classList.remove('open'));
-    if(!wasOpen) item.classList.add('open');
-  });
-});
-
-// Module accordion
-document.querySelectorAll('.module-head').forEach(head=>{
-  head.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    const mod = head.parentElement;
-    const wasOpen = mod.classList.contains('open');
-    document.querySelectorAll('.module').forEach(m=>m.classList.remove('open'));
-    if(!wasOpen) mod.classList.add('open');
-  });
-});
-
-// Roadmap step click
-document.querySelectorAll('.rstep').forEach(step=>{
-  step.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    document.querySelectorAll('.rstep').forEach(s=>s.classList.remove('active'));
-    step.classList.add('active');
-  });
-});
-</script>
+<script src="script.js"></script>
 </body>
 </html>
