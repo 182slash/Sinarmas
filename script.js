@@ -22,6 +22,7 @@ function render(){
     s.classList.remove('active','prev');
     if(i === current) s.classList.add('active');
     else if(i < current) s.classList.add('prev');
+    if(s.classList.contains('closing')) s.classList.toggle('play', i === current);   // cadangan: pastikan konten penutup selalu tampil walau hook animasinya tidak sempat jalan
   });
   dotEls.forEach((d,i)=>d.classList.toggle('active', i===current));
   document.getElementById('progressFill').style.width = ((current)/(total-1))*100 + '%';
