@@ -615,3 +615,31 @@ p{color:var(--ink-dim); margin:0;}
   .closing .kicker, .closing .lead, .closing .foot-meta, .closing h2 .w{ opacity:1; transform:none; filter:none; }
   .closing::before{ opacity:1; }
 }
+
+/* ---------- GAIA add-on slides (tema berbeda: violet/cyan, "kecerdasan terdesentralisasi") ---------- */
+.gaia-slide{
+  --amber:#8B7CF6; --amber-dim:#5B4FBE; --steel:#3FD0C9; --alert:#22D3C6; --good:#3FD0C9;
+}
+.gaia-slide .foot-meta{
+  padding-top:16px; border-top:1px solid var(--line); max-width:480px;
+  font-family:var(--mono); font-size:12px; color:var(--ink-faint); display:flex; flex-direction:column; gap:6px;
+}
+.gaia-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:40px;}
+.gaia-card{background:var(--bg-panel); border:1px solid var(--line); padding:20px 18px;}
+.gaia-card .gc-tag{font-family:var(--mono); font-size:11.5px; color:var(--amber); margin-bottom:10px; letter-spacing:.04em;}
+.gaia-card p{font-size:13.6px; line-height:1.55; color:var(--ink-dim); margin:0;}
+.gaia-net{margin-top:26px;}
+.gaia-net svg{width:100%; max-width:520px; height:auto; display:block; margin:0 auto; overflow:visible;}
+.gnode-label{font-family:var(--mono); font-size:10.5px; fill:var(--ink-faint); text-anchor:middle;}
+.gnode-circle{fill:var(--bg-panel); stroke:var(--amber); stroke-width:1.4;}
+.gline{stroke:var(--line); stroke-width:1.4; fill:none;}
+.gdot{fill:var(--amber); filter:drop-shadow(0 0 6px rgba(139,124,246,.6));}
+.gaia-benefits{display:grid; grid-template-columns:1fr 1fr; gap:18px 30px; margin-top:38px; max-width:920px;}
+.gaia-benefit{border-top:1px solid var(--line-soft); padding-top:14px;}
+.gaia-benefit .gb-num{font-family:var(--mono); font-size:11.5px; color:var(--amber); display:block; margin-bottom:6px;}
+.gaia-benefit h4{font-family:var(--sans); font-size:15px; font-weight:600; margin-bottom:6px; color:var(--ink);}
+.gaia-benefit p{font-size:13.4px; line-height:1.55; margin:0;}
+@media(max-width:900px){
+  .gaia-grid{grid-template-columns:1fr;}
+  .gaia-benefits{grid-template-columns:1fr;}
+}

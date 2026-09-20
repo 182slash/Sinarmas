@@ -4,7 +4,7 @@ let current = 0;
 const fitTop = () => window.innerWidth <= 900 ? 100 : 84;   // batas atas area konten (di bawah logo watermark)
 const slideHooks = [];   // dipanggil tiap kali slide berganti (dipakai animasi slide 2 & 3)
 
-const labels = ['TITLE','LATAR BELAKANG','MEKANISME SITE','IDENTIFIKASI MASALAH','RUMUSAN MASALAH','SOLUSI','ROADMAP','PENUTUP'];
+const labels = ['TITLE','LATAR BELAKANG','MEKANISME SITE','IDENTIFIKASI MASALAH','RUMUSAN MASALAH','SOLUSI','ROADMAP','PENUTUP','GAIA — ORBIT','GAIA — JARINGAN','GAIA — MANFAAT'];
 
 const dotsWrap = document.getElementById('dots');
 slides.forEach((s,i)=>{

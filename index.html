@@ -44,7 +44,7 @@
   <div class="slide" data-slide="1">
     <div class="slide-inner">
       <div class="kicker">01 — LATAR BELAKANG MASALAH</div>
-      <h2>Check-Sheet Merangkak</h2>
+      <h2>Satu jalur produksi, dua metode ukur, Check-Sheet Merangkak</h2>
       <p class="lead">Alur produksi crude oil di site berjalan lewat delapan titik pencatatan manual. Setiap titik berpotensi menjadi tempat data melenceng dari kondisi sebenarnya — dan sejauh ini tidak ada satu pun yang tercatat otomatis.</p>
       <div class="latar-illustration" aria-hidden="true">
         <svg viewBox="0 0 640 132" id="latarSvg">
@@ -655,6 +655,81 @@
     </div>
   </div>
 
+  <!-- SLIDE 9: GAIA intro (tambahan) -->
+  <div class="slide gaia-slide" data-slide="8">
+    <div class="slide-inner">
+      <div class="kicker">TAMBAHAN — WAWASAN TEKNOLOGI</div>
+      <h2>Setelah Titik Ukur di Darat, Giliran Mata dari Orbit</h2>
+      <p class="lead">Delapan titik pencatatan tadi mengunci kejujuran data di dalam pagar site. Ada lapisan lain yang bisa memverifikasi dari luar pagar itu: jaringan kecerdasan terdesentralisasi Bittensor, lewat subnet bernama <strong style="color:var(--ink);">GAIA</strong>, yang membaca kondisi lahan langsung dari citra satelit — independen dari laporan site mana pun.</p>
+      <div class="title-meta">
+        <div><strong>Subnet 57</strong>di jaringan Bittensor</div>
+        <div><strong>100 km²</strong>resolusi tiap prediksi</div>
+        <div><strong>Data SMAP</strong>pembanding kebenaran satelit</div>
+      </div>
+    </div>
+    <div class="title-illustration" aria-hidden="true">
+      <svg viewBox="0 0 320 320">
+        <circle class="ti-ring ti-ring-1" cx="160" cy="160" r="130"></circle>
+        <circle class="ti-ring ti-ring-2" cx="160" cy="160" r="98"></circle>
+        <circle class="ti-scan" cx="160" cy="160" r="130"></circle>
+        <g class="ti-drop">
+          <path d="M160,110 C182,140 196,160 196,178 A36,36 0 1 1 124,178 C124,160 138,140 160,110 Z"></path>
+        </g>
+        <circle class="ti-orbit-dot ti-orbit-dot-a" r="4"></circle>
+        <circle class="ti-orbit-dot ti-orbit-dot-b" r="3"></circle>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: GAIA cara kerja (tambahan) -->
+  <div class="slide gaia-slide" data-slide="9">
+    <div class="slide-inner">
+      <div class="kicker">GAIA — ARSITEKTUR JARINGAN</div>
+      <h2 style="font-size:clamp(24px,3.2vw,38px);">Ratusan Model Bersaing, Satu Kebenaran yang Disepakati</h2>
+      <p class="lead" style="max-width:64ch;">Setiap <em style="font-style:normal;color:var(--ink);">miner</em> di subnet GAIA mengirim prediksi independen atas satu wilayah lahan. <em style="font-style:normal;color:var(--ink);">Validator</em> menilai akurasi tiap prediksi terhadap data satelit, lalu hanya model paling akurat yang mendapat imbalan token TAO — memaksa jaringan terus mengoreksi dirinya sendiri, tanpa satu otoritas tunggal yang bisa didikte.</p>
+      <div class="gaia-grid">
+        <div class="gaia-card"><div class="gc-tag">01 · MINER</div><p>Mengirim prediksi kelembapan tanah dari citra satelit untuk tiap grid seluas 100 km², termasuk area kebun sawit.</p></div>
+        <div class="gaia-card"><div class="gc-tag">02 · VALIDATOR</div><p>Membandingkan tiap prediksi terhadap data satelit SMAP sebagai kebenaran acuan, lalu menandai model yang menyimpang.</p></div>
+        <div class="gaia-card"><div class="gc-tag">03 · INSENTIF TAO</div><p>Model paling akurat mendapat bagian emisi terbesar; yang meleset kehilangan bobot pada putaran berikutnya.</p></div>
+      </div>
+      <div class="gaia-net" aria-hidden="true">
+        <svg viewBox="0 0 520 160">
+          <path class="gline" d="M100,120 L260,40"></path>
+          <path class="gline" d="M260,40 L420,120"></path>
+          <path class="gline" d="M100,120 L420,120"></path>
+          <circle class="gdot" r="3.4" style="offset-path:path('M100,120 L260,40'); animation: tiOrbitA 2.6s linear infinite;"></circle>
+          <circle class="gdot" r="3.4" style="offset-path:path('M260,40 L420,120'); animation: tiOrbitA 2.6s linear infinite; animation-delay:.5s;"></circle>
+          <circle class="gdot" r="3.4" style="offset-path:path('M100,120 L420,120'); animation: tiOrbitA 3.2s linear infinite; animation-delay:1s;"></circle>
+          <circle class="gnode-circle" cx="100" cy="120" r="26"></circle>
+          <circle class="gnode-circle" cx="260" cy="40" r="26"></circle>
+          <circle class="gnode-circle" cx="420" cy="120" r="26"></circle>
+          <text class="gnode-label" x="100" y="152">MINERS</text>
+          <text class="gnode-label" x="260" y="20">VALIDATORS</text>
+          <text class="gnode-label" x="420" y="152">SATELIT (SMAP)</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: GAIA manfaat untuk sawit skala besar (tambahan) -->
+  <div class="slide gaia-slide" data-slide="10">
+    <div class="slide-inner">
+      <div class="kicker">GAIA UNTUK SAWIT — DUA LAPIS KEBENARAN</div>
+      <h2 style="font-size:clamp(24px,3.2vw,38px);">Data Darat dari Mill Integrity, Data Langit dari GAIA</h2>
+      <p class="lead" style="max-width:64ch;">Rendemen dan waktu olah terkunci di titik ukur mill. Kelembapan tanah dan stres kekeringan terkunci di citra satelit yang dinilai independen oleh jaringan GAIA. Kombinasi keduanya membuat data produksi dan data lahan saling mengoreksi — tidak ada lagi ruang untuk menambal salah satunya sendirian.</p>
+      <div class="gaia-benefits">
+        <div class="gaia-benefit"><span class="gb-num">01</span><h4>Deteksi Dini Stres Lahan</h4><p>Pola kelembapan tanah yang menurun terbaca dari satelit sebelum rendemen ikut turun di mill.</p></div>
+        <div class="gaia-benefit"><span class="gb-num">02</span><h4>Jadwal Panen &amp; Pupuk Lebih Tepat</h4><p>Prediksi per grid 100 km² membantu menyesuaikan rotasi panen dan pemupukan pada area yang paling terdampak.</p></div>
+        <div class="gaia-benefit"><span class="gb-num">03</span><h4>Pembanding yang Independen</h4><p>Angka kondisi lahan tidak berasal dari laporan internal site, sehingga sulit ditambal bersamaan dengan data mill.</p></div>
+        <div class="gaia-benefit"><span class="gb-num">04</span><h4>Skala ke Seluruh Grup</h4><p>Satu jaringan yang sama memantau semua site sekaligus, tanpa menambah sensor fisik baru di lapangan.</p></div>
+      </div>
+      <div class="foot-meta" style="margin-top:44px;">
+        <span>MILL INTEGRITY PLATFORM × GAIA (BITTENSOR)</span>
+        <span>MATERI INTERNAL — UNTUK KEPERLUAN PAPARAN</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <div class="chrome">
@@ -670,7 +745,7 @@
     <button class="arrow-btn" id="nextBtn" aria-label="Berikutnya">→</button>
   </div>
   <div class="dots" id="dots"></div>
-  <div class="slide-counter"><b id="curNum">01</b> / <span id="totalNum">08</span></div>
+  <div class="slide-counter"><b id="curNum">01</b> / <span id="totalNum">11</span></div>
 </div>
 
 <script src="script.js"></script>
