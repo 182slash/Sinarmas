@@ -628,12 +628,31 @@ p{color:var(--ink-dim); margin:0;}
 .gaia-card{background:var(--bg-panel); border:1px solid var(--line); padding:20px 18px;}
 .gaia-card .gc-tag{font-family:var(--mono); font-size:11.5px; color:var(--amber); margin-bottom:10px; letter-spacing:.04em;}
 .gaia-card p{font-size:13.6px; line-height:1.55; color:var(--ink-dim); margin:0;}
-.gaia-net{margin-top:26px;}
-.gaia-net svg{width:100%; max-width:520px; height:auto; display:block; margin:0 auto; overflow:visible;}
-.gnode-label{font-family:var(--mono); font-size:10.5px; fill:var(--ink-faint); text-anchor:middle;}
+.gaia-net{margin-top:22px;}
+.gaia-net svg{width:100%; max-width:620px; height:auto; display:block; margin:0 auto; overflow:visible;}
+.gnode-label{font-family:var(--mono); font-size:10.5px; fill:var(--ink-faint); text-anchor:middle; letter-spacing:.03em;}
+.gnode-label-main{font-size:11.5px; fill:var(--ink-dim); font-weight:600;}
 .gnode-circle{fill:var(--bg-panel); stroke:var(--amber); stroke-width:1.4;}
+.gnode-core{stroke-width:2; filter:drop-shadow(0 0 14px rgba(139,124,246,.55));}
+.gnode-sat{stroke:var(--steel); filter:drop-shadow(0 0 12px rgba(63,208,201,.55));}
+.gnode-halo{fill:var(--amber); opacity:.14;}
+.gnode-pulse .gnode-halo{ animation:gHaloPulse 2.6s ease-in-out infinite; }
+.gnode-pulse:nth-of-type(2) .gnode-halo{ animation-delay:.5s; }
+.gnode-pulse:nth-of-type(3) .gnode-halo{ animation-delay:1s; }
+@keyframes gHaloPulse{ 0%,100%{ transform:scale(1); opacity:.1; } 50%{ transform:scale(1.7); opacity:.28; } }
 .gline{stroke:var(--line); stroke-width:1.4; fill:none;}
-.gdot{fill:var(--amber); filter:drop-shadow(0 0 6px rgba(139,124,246,.6));}
+.gline-main{stroke:var(--amber-dim); stroke-width:2;}
+.gdot{fill:var(--amber); filter:drop-shadow(0 0 6px rgba(139,124,246,.7));}
+.gdot-main{fill:var(--steel); filter:drop-shadow(0 0 10px rgba(63,208,201,.85));}
+@keyframes gFlow{ from{ offset-distance:0%; } to{ offset-distance:100%; } }
+@keyframes gFlowFade{ 0%{opacity:0;} 10%{opacity:1;} 88%{opacity:1;} 100%{opacity:0;} }
+.gring{fill:none; stroke:var(--amber); stroke-width:1.4; opacity:0; transform-box:fill-box; transform-origin:center; animation:gRingPulse 2.2s ease-out infinite;}
+@keyframes gRingPulse{ 0%{ opacity:.7; transform:scale(.6); } 100%{ opacity:0; transform:scale(1.9); } }
+.gaia-ring{fill:none; stroke:var(--amber); stroke-width:1; opacity:.55; transform-box:fill-box; transform-origin:center;}
+.gaia-ring-1{ stroke-dasharray:3 7; animation:tiSpin 16s linear infinite; }
+.gaia-ring-2{ stroke-dasharray:1 6; opacity:.35; animation:tiSpin 24s linear infinite reverse; }
+.gaia-ring-sat{ stroke:var(--steel); stroke-dasharray:2 6; opacity:.5; animation:tiSpin 12s linear infinite; }
+.gsat-orbit{fill:var(--steel); filter:drop-shadow(0 0 6px rgba(63,208,201,.8));}
 .gaia-benefits{display:grid; grid-template-columns:1fr 1fr; gap:18px 30px; margin-top:38px; max-width:920px;}
 .gaia-benefit{border-top:1px solid var(--line-soft); padding-top:14px;}
 .gaia-benefit .gb-num{font-family:var(--mono); font-size:11.5px; color:var(--amber); display:block; margin-bottom:6px;}

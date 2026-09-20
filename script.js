@@ -547,7 +547,7 @@ const holdAlpha = (ch, tc) => 1 - clamp01((tc - (ch.cycle - .35)) / .35);
    Diputar ulang setiap kali slide dibuka. Semua gerak utama ada di CSS (kelas .play);
    script hanya memecah judul jadi kata, menghitung mundur "90 hari", dan parallax halus. */
 (function(){
-  const idx = slides.length - 1, slide = slides[idx];   // penutup = slide terakhir
+  const slide = document.querySelector('.slide.closing'), idx = slides.indexOf(slide);   // penutup = slide bertanda .closing (bukan selalu slide terakhir)
   if(!slide) return;
   const title = document.getElementById('closingTitle');
   const cCount = document.getElementById('cCount');

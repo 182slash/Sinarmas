@@ -686,26 +686,71 @@
     <div class="slide-inner">
       <div class="kicker">GAIA — ARSITEKTUR JARINGAN</div>
       <h2 style="font-size:clamp(24px,3.2vw,38px);">Ratusan Model Bersaing, Satu Kebenaran yang Disepakati</h2>
-      <p class="lead" style="max-width:64ch;">Setiap <em style="font-style:normal;color:var(--ink);">miner</em> di subnet GAIA mengirim prediksi independen atas satu wilayah lahan. <em style="font-style:normal;color:var(--ink);">Validator</em> menilai akurasi tiap prediksi terhadap data satelit, lalu hanya model paling akurat yang mendapat imbalan token TAO — memaksa jaringan terus mengoreksi dirinya sendiri, tanpa satu otoritas tunggal yang bisa didikte.</p>
+      <p class="lead" style="max-width:64ch;">Setiap <em style="font-style:normal;color:var(--ink);">kontributor model</em> di subnet GAIA mengirim prediksi independen atas satu wilayah lahan. <em style="font-style:normal;color:var(--ink);">Validator</em> menilai akurasi tiap prediksi terhadap data satelit, lalu hanya model paling akurat yang mendapat imbalan token TAO — memaksa jaringan terus mengoreksi dirinya sendiri, tanpa satu otoritas tunggal yang bisa didikte.</p>
       <div class="gaia-grid">
-        <div class="gaia-card"><div class="gc-tag">01 · MINER</div><p>Mengirim prediksi kelembapan tanah dari citra satelit untuk tiap grid seluas 100 km², termasuk area kebun sawit.</p></div>
+        <div class="gaia-card"><div class="gc-tag">01 · KONTRIBUTOR MODEL</div><p>Mengirim prediksi kelembapan tanah dari citra satelit untuk tiap grid seluas 100 km², termasuk area kebun sawit.</p></div>
         <div class="gaia-card"><div class="gc-tag">02 · VALIDATOR</div><p>Membandingkan tiap prediksi terhadap data satelit SMAP sebagai kebenaran acuan, lalu menandai model yang menyimpang.</p></div>
         <div class="gaia-card"><div class="gc-tag">03 · INSENTIF TAO</div><p>Model paling akurat mendapat bagian emisi terbesar; yang meleset kehilangan bobot pada putaran berikutnya.</p></div>
       </div>
       <div class="gaia-net" aria-hidden="true">
-        <svg viewBox="0 0 520 160">
-          <path class="gline" d="M100,120 L260,40"></path>
-          <path class="gline" d="M260,40 L420,120"></path>
-          <path class="gline" d="M100,120 L420,120"></path>
-          <circle class="gdot" r="3.4" style="offset-path:path('M100,120 L260,40'); animation: tiOrbitA 2.6s linear infinite;"></circle>
-          <circle class="gdot" r="3.4" style="offset-path:path('M260,40 L420,120'); animation: tiOrbitA 2.6s linear infinite; animation-delay:.5s;"></circle>
-          <circle class="gdot" r="3.4" style="offset-path:path('M100,120 L420,120'); animation: tiOrbitA 3.2s linear infinite; animation-delay:1s;"></circle>
-          <circle class="gnode-circle" cx="100" cy="120" r="26"></circle>
-          <circle class="gnode-circle" cx="260" cy="40" r="26"></circle>
-          <circle class="gnode-circle" cx="420" cy="120" r="26"></circle>
-          <text class="gnode-label" x="100" y="152">MINERS</text>
-          <text class="gnode-label" x="260" y="20">VALIDATORS</text>
-          <text class="gnode-label" x="420" y="152">SATELIT (SMAP)</text>
+        <svg viewBox="0 0 640 300">
+          <defs>
+            <filter id="gGlow" x="-160%" y="-160%" width="420%" height="420%">
+              <feGaussianBlur stdDeviation="4.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <radialGradient id="gHubGlow">
+              <stop offset="0%" stop-color="var(--amber)" stop-opacity=".35"/>
+              <stop offset="100%" stop-color="var(--amber)" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <!-- lingkaran cahaya lembut di belakang hub validator -->
+          <circle cx="330" cy="150" r="120" fill="url(#gHubGlow)"></circle>
+
+          <!-- garis kontributor -> validator -->
+          <path class="gline" d="M110,55  L330,150"></path>
+          <path class="gline" d="M110,150 L330,150"></path>
+          <path class="gline" d="M110,245 L330,150"></path>
+          <!-- garis validator -> satelit -->
+          <path class="gline gline-main" d="M330,150 L540,150"></path>
+
+          <!-- partikel data mengalir: kontributor -> validator -->
+          <circle class="gdot" r="3.6" style="offset-path:path('M110,55 L330,150');  animation: gFlow 2.2s linear infinite, gFlowFade 2.2s linear infinite;"></circle>
+          <circle class="gdot" r="3.6" style="offset-path:path('M110,150 L330,150'); animation: gFlow 1.9s linear infinite, gFlowFade 1.9s linear infinite; animation-delay:.5s,.5s;"></circle>
+          <circle class="gdot" r="3.6" style="offset-path:path('M110,245 L330,150'); animation: gFlow 2.4s linear infinite, gFlowFade 2.4s linear infinite; animation-delay:1s,1s;"></circle>
+          <!-- partikel data mengalir: validator -> satelit (lebih besar & berkilau, dua beriringan) -->
+          <circle class="gdot gdot-main" r="5" style="offset-path:path('M330,150 L540,150'); animation: gFlow 1.6s linear infinite, gFlowFade 1.6s linear infinite;"></circle>
+          <circle class="gdot gdot-main" r="5" style="offset-path:path('M330,150 L540,150'); animation: gFlow 1.6s linear infinite, gFlowFade 1.6s linear infinite; animation-delay:.8s,.8s;"></circle>
+
+          <!-- ring berdenyut di sekitar hub validator -->
+          <circle class="gring" cx="330" cy="150" r="34"></circle>
+          <circle class="gring" cx="330" cy="150" r="34" style="animation-delay:1.1s;"></circle>
+
+          <!-- node kontributor (3 sumber prediksi independen) -->
+          <g class="gnode-pulse" transform="translate(110,55)"><circle class="gnode-halo" r="14"></circle><circle class="gnode-circle" r="20"></circle></g>
+          <g class="gnode-pulse" transform="translate(110,150)"><circle class="gnode-halo" r="14"></circle><circle class="gnode-circle" r="20"></circle></g>
+          <g class="gnode-pulse" transform="translate(110,245)"><circle class="gnode-halo" r="14"></circle><circle class="gnode-circle" r="20"></circle></g>
+
+          <!-- hub validator: cincin berputar + inti bercahaya -->
+          <g transform="translate(330,150)">
+            <circle class="gaia-ring gaia-ring-1" r="46"></circle>
+            <circle class="gaia-ring gaia-ring-2" r="58"></circle>
+            <circle class="gnode-circle gnode-core" r="30" filter="url(#gGlow)"></circle>
+          </g>
+
+          <!-- satelit di ujung kanan: node + orbit kecil mengelilinginya -->
+          <g transform="translate(540,150)">
+            <circle class="gnode-circle gnode-sat" r="24" filter="url(#gGlow)"></circle>
+            <circle class="gaia-ring gaia-ring-sat" r="40"></circle>
+            <circle class="gsat-orbit" r="3.2" style="offset-path:path('M540,150 m-40,0 a40,40 0 1,0 80,0 a40,40 0 1,0 -80,0'); animation: tiOrbitA 7s linear infinite;"></circle>
+          </g>
+
+          <text class="gnode-label" x="110" y="90">KONTRIBUTOR</text>
+          <text class="gnode-label" x="110" y="185">KONTRIBUTOR</text>
+          <text class="gnode-label" x="110" y="280">KONTRIBUTOR</text>
+          <text class="gnode-label gnode-label-main" x="330" y="205">VALIDATOR</text>
+          <text class="gnode-label gnode-label-main" x="540" y="192">SATELIT (SMAP)</text>
         </svg>
       </div>
     </div>
