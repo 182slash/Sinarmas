@@ -110,7 +110,7 @@ const problemData = {
     text:'Checksheet baru masuk 1–2 hari setelah crude oil selesai diolah. Tidak ada koreksi real-time ketika rendemen turun.',
     stat:'1–2 hari', statLabel:'JEDA ANTARA PRODUKSI DAN LAPORAN SAMPAI KE HQ', lines:['ln2','ln5']},
   p4: {tag:'SIMPUL 04', title:'Dua metode ukur untuk satu muatan',
-    text:'Tinggi minyak diukur manual di tongkang saat muat, lalu diukur ulang lewat selang saat bongkar — metode berbeda membuat selisih sulit dilacak.',
+    text:'Tinggi minyak diukur manual di tongkang saat muat, lalu diukur ulang lewat selang saat bongkar  metode berbeda membuat selisih sulit dilacak.',
     stat:'2 metode', statLabel:'CARA UKUR YANG BERBEDA UNTUK MUATAN YANG SAMA', lines:['ln3']},
   p5: {tag:'SIMPUL 05', title:'Antrean dan shift 2 belum terukur',
     text:'Raw material eksternal dibatasi 08.00–17.00, tapi shift 2 berjalan tanpa batas waktu sampai semua raw material selesai diolah. Data waktu tunggu & lembur belum tersedia.',
