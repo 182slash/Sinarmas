@@ -1,6 +1,7 @@
 const slides = Array.from(document.querySelectorAll('.slide'));
 const total = slides.length;
 let current = 0;
+const stepPos = {};   // index poin/step yang sedang aktif per slide (-1 = belum ada yang aktif), dipakai navigasi panah kiri/kanan
 const fitTop = () => window.innerWidth <= 900 ? 100 : 84;   // batas atas area konten (di bawah logo watermark)
 const slideHooks = [];   // dipanggil tiap kali slide berganti (dipakai animasi slide 2 & 3)
 
@@ -35,14 +36,20 @@ function render(){
 function goTo(i){
   if(i < 0 || i >= total) return;
   current = i;
+  stepPos[i] = -1;   // pindah slide lewat tombol/dot selalu mulai dari awal (belum ada poin yang aktif)
   render();
 }
 document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
 document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
 
 window.addEventListener('keydown', (e)=>{
-  if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(current+1); }
-  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); goTo(current-1); }
+  if(['ArrowRight','ArrowLeft'].includes(e.key)){
+    e.preventDefault();
+    stepOrGoTo(e.key === 'ArrowRight' ? 1 : -1);
+    return;
+  }
+  if([' ','PageDown'].includes(e.key)){ e.preventDefault(); goTo(current+1); }
+  if(e.key === 'PageUp'){ e.preventDefault(); goTo(current-1); }
   if(e.key === 'Home') goTo(0);
   if(e.key === 'End') goTo(total-1);
 });
@@ -208,6 +215,31 @@ rstepsList.forEach(step=>{
   });
 });
 setRoadmapFill();
+
+// ---- Navigasi poin/step per slide pakai panah kiri/kanan keyboard ----
+// (skip antar slide tetap lewat tombol panah pojok kiri bawah / dot, bukan keyboard)
+const pnodesList = Array.from(pnodes);
+const rnodesList2 = Array.from(rnodes);
+function getStepGroup(slideIdx){
+  switch(slideIdx){
+    case 2: return flowStations;   // 01 — MEKANISME SITE: truk masuk, timbang bruto, dst
+    case 3: return pnodesList;     // IDENTIFIKASI MASALAH
+    case 4: return rnodesList2;    // RUMUSAN MASALAH
+    case 6: return rstepsList;     // ROADMAP
+    default: return null;
+  }
+}
+function stepOrGoTo(dir){
+  const group = getStepGroup(current);
+  if(!group || !group.length) return;   // slide ini tidak punya poin bertahap
+  const n = group.length;
+  const cur = stepPos[current] !== undefined ? stepPos[current] : -1;
+  if(cur === -1 && dir === -1) return;          // sudah sebelum poin pertama
+  const next = Math.max(0, Math.min(n - 1, cur + dir));
+  if(next === cur) return;                      // sudah di poin pertama/terakhir, diam
+  stepPos[current] = next;
+  group[next].click();
+}
 
 
 /* =====================================================================
