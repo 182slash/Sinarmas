@@ -107,7 +107,7 @@ const problemData = {
     text:'Kekurangan output pada satu hari ditutup memakai surplus dari hasil olah hari sebelumnya. Manajemen tidak pernah melihat rendemen (OER) yang sesungguhnya.',
     stat:'0 kali', statLabel:'KOREKSI REAL-TIME YANG TERCATAT SAAT INI', lines:['ln1']},
   p3: {tag:'SIMPUL 03', title:'Laporan datang 1–2 hari setelah produksi',
-    text:'Checksheet baru masuk 1–2 hari setelah crude oil selesai diolah. Tidak ada koreksi real-time ketika rendemen turun.',
+    text:'Checksheet baru masuk 1–2 hari setelah Crude Palm Oil selesai diolah. Tidak ada koreksi real-time ketika rendemen turun.',
     stat:'1–2 hari', statLabel:'JEDA ANTARA PRODUKSI DAN LAPORAN SAMPAI KE HQ', lines:['ln2','ln5']},
   p4: {tag:'SIMPUL 04', title:'Dua metode ukur untuk satu muatan',
     text:'Tinggi minyak diukur manual di tongkang saat muat, lalu diukur ulang lewat selang saat bongkar  metode berbeda membuat selisih sulit dilacak.',
